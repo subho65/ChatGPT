@@ -1,719 +1,908 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.css">
+    <title>ChatBHO</title>
+    <style>
+        :root,
+        [data-theme="dark"] {
+            --bg-primary: #141c2f;
+            --bg-secondary: #1e2a44;
+            --accent: #00b7ff;
+            --text-primary: #d9e1e8;
+            --text-secondary: #8a94a6;
+            --user-bubble: #0066cc;
+            --assistant-bubble: #2a3555;
+            /* Fixed typo from --assistant-bV */
+            --shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            --radius: 0.8rem;
+            --input-border: #3a4666;
+            --code-bg: #1a233b;
+            --separator: #2e3b5a;
+            --error-color: #ff6b6b;
+        }
 
+        [data-theme="light"] {
+            --bg-primary: #f5f7fa;
+            --bg-secondary: #ffffff;
+            --accent: #007bff;
+            --text-primary: #1a2a44;
+            --text-secondary: #6b7280;
+            --user-bubble: #007bff;
+            --assistant-bubble: #e5e7eb;
+            --shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            --radius: 0.8rem;
+            --input-border: #d1d5db;
+            --code-bg: #f3f4f6;
+            --separator: #d1d5db;
+            --error-color: #e53e3e;
+        }
 
-  
-  <title>ChatBHO</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    body{
-      background-color: #212121;
-      color: #fff;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      height: 90vh;
-      margin: 0;
-      overflow: hidden;
-      font-family: "times new roman", serif;
-    }
+        body {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: "Arial", sans-serif;
+            overflow-y: auto;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
 
-    .container {
-      width: 100%;
-      max-width: 600px;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
-      height: 100%;
-      padding-top: 10px;
+        .container {
+            width: 90%;
+            max-width: 900px;
+            height: 95vh;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-secondary);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
 
-    }
+        .header {
+            font-size: clamp(1.5rem, 4vw, 2rem);
+            text-align: center;
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--bg-primary), var(--bg-secondary));
+            color: var(--text-primary);
+            font-weight: 600;
+            position: relative;
+            border-bottom: 1px solid var(--separator);
+        }
 
-    .header {
-      font-size: 2rem;
-      text-align: center;
-      color: #fff;
-      font-weight: 900;
-    }
+        .info-button,
+        .delete-button {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: clamp(1.2rem, 3vw, 1.5rem);
+            cursor: pointer;
+            transition: color 0.3s ease, transform 0.2s ease;
+        }
 
-    .info-button {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      background: none;
-      border: none;
-      color: #fff;
-      font-size: 1.5rem;
-      cursor: pointer;
-    }
+        .info-button:hover,
+        .delete-button:hover {
+            color: var(--accent);
+            transform: translateY(-50%) scale(1.1);
+        }
 
-    .delete-button {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      background: none;
-      border: none;
-      color: #fff;
-      font-size: 1.5rem;
-      cursor: pointer;
-    }
+        .info-button {
+            left: 1rem;
+        }
 
+        .delete-button {
+            right: 1rem;
+        }
 
-    .chat-area {
-      flex-grow: 1;
-      padding: 20px;
-      overflow-y: auto;
-      margin-bottom: 60px;
-      display: flex;
-      flex-direction: column;
-    }
+        .chat-area {
+            flex-grow: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: var(--accent) var(--bg-secondary);
+        }
 
-    .user-message,
-    .assistant-message {
+        .chat-area::-webkit-scrollbar {
+            width: 6px;
+        }
 
-      border-radius: 15px;
-      max-width: 75%;
-      line-height: 1.4;
-      word-wrap: break-word;
-      position: relative;
-      font-size: 1rem;
+        .chat-area::-webkit-scrollbar-thumb {
+            background: var(--accent);
+            border-radius: 3px;
+        }
 
-    }
+        .chat-area::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+        }
 
-    .user-message {
-      margin: 15px 0;
-      padding: 12px 10px;
-      background-color: #333;
-      color: white;
-      margin-left: auto;
-      text-align: left;
-    }
+        .user-message,
+        .assistant-message {
+            max-width: fit-content;
+            min-width: 10%;
+            font-size: clamp(0.9rem, 2vw, 1rem);
+            line-height: 1.5;
+            padding: 0.8rem 1.3rem;
+            margin: 0.6rem 0;
+            border-radius: var(--radius);
+            word-wrap: break-word;
+            box-shadow: var(--shadow);
+        }
 
-    .assistant-message {
-      background-color: none;
-      color: #d1d5db;
-      margin-left: 5%
+        .user-message {
+            background: var(--user-bubble);
+            color: #fff;
+            margin-left: auto;
+        }
 
-    }
+        .assistant-message {
+            background: var(--assistant-bubble);
+            color: var(--text-primary);
+            margin-right: auto;
+        }
 
-    .assistant-message .typing {
-      color: #bbb;
-      font-style: italic;
-      text-align: left;
-      font-size: 1em;
-    }
+        .assistant-message .typing {
+            color: var(--text-secondary);
+            font-style: italic;
+            font-size: 0.9em;
+            background: none;
+            padding: 0;
+            margin: 0;
+        }
 
-    .input-container {
-      display: flex;
-      align-items: center;
-      background-color: #333;
-      padding: 5px 20px;
-      border-radius: 50px;
-      position: fixed;
-      bottom: 30px;
-      left: 50%;
-      transform: translateX(-50%);
-      max-width: 400px;
-      width: calc(100% - 30px);
-    }
+        .assistant-message:empty {
+            display: none;
+        }
 
-    input {
-      border: none;
-      background: none;
-      color: #fff;
-      outline: none;
-      flex: 1 1 95%;
-      font-size: 1.1em;
-      padding-right: 10px;
-    }
+        .katex {
+            display: inline-block;
+            vertical-align: middle;
+            margin: 0 0.2rem;
+            padding: 0;
+        }
 
-    #sendButton {
-      background: #fff;
-      border: none;
-      color: #212121;
-      cursor: pointer;
-      flex-shrink: 0;
-      padding: 5px 10px;
-      border-radius: 50%;
-      font-size: 1.2rem
-    }
+        .katex-display {
+            display: block;
+            margin: 0.5rem 0;
+            text-align: center;
+            padding: 0;
+            line-height: 1.2;
+        }
 
+        .katex-display>.katex {
+            display: inline-block;
+        }
 
+        .katex-html {
+            line-height: 1.2;
+            white-space: normal;
+        }
 
-    .message-box {
-      color: #bbb;
-      text-align: center;
-      position: fixed;
-      top: 98%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: .8rem;
-      border-radius: 10px;
-      max-width: 400px;
-      width: 80%;
-      z-index: 10;
-      pointer-events: none;
-    }
+        .math-error {
+            color: var(--error-color);
+            font-style: italic;
+        }
 
-    
+        .input-container {
+            width: 100%;
+            background: var(--bg-primary);
+            padding: 0.8rem 1rem;
+            border-top: 1px solid var(--separator);
+            display: flex;
+            align-items: center;
+            z-index: 10;
+        }
 
-    /* Styling for code blocks */
-    pre {
-      background-color: #1e1e1e;
-      color: #dcdcdc;
-      padding: 20px;
-      border-radius: 10px;
-      overflow-x: auto;
-      white-space: pre-wrap;
-      word-wrap: break-word;
-    }
+        input {
+            flex: 1;
+            background: var(--bg-secondary);
+            border: 1px solid var(--input-border);
+            border-radius: 0.5rem;
+            color: var(--text-primary);
+            font-size: clamp(0.9rem, 2vw, 1rem);
+            padding: 0.6rem 1rem;
+            outline: none;
+            transition: border-color 0.3s ease, background 0.3s ease;
+        }
 
-    code {
-      color: #dcdcdc;
-    }
+        input:focus {
+            border-color: var(--accent);
+            background: [data-theme="dark"] ? #253054: #f0f4f8;
+        }
 
-    /* Styling for horizontal rule (---) */
-    .separator {
-      border-top: 1px solid #444;
-      margin: 15px 0;
-    }
+        #sendButton {
+            background: var(--accent);
+            border: none;
+            color: #fff;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 0.8rem;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.2s ease-in-out;
+        }
 
-    .typing::after {
-      content: '.';
-      animation: dots 1s steps(5, end) infinite;
-    }
+        #sendButton:hover {
+            background: [data-theme="dark"] ? #0099d6: #0056b3;
+            transform: scale(1.1);
+        }
 
-    @keyframes dots {
+        #sendButton:active {
+            transform: scale(1);
+        }
 
-      0%,
-      20% {
-        content: '.';
-      }
+        pre {
+            background: var(--code-bg);
+            color: [data-theme="dark"] ? #dcdcdc: #1a2a44;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+            font-size: clamp(0.85rem, 2vw, 0.95rem);
+        }
 
-      40% {
-        content: '..';
-      }
+        code {
+            color: [data-theme="dark"] ? #dcdcdc: #1a2a44;
+        }
 
-      60% {
-        content: '...';
-      }
-    }
+        .separator {
+            border-top: 1px solid var(--separator);
+            margin: 1rem 0;
+        }
 
+        .typing::after {
+            content: '.';
+            animation: dots 1s steps(5, end) infinite;
+        }
 
-    .modal {
-      display: none;
-      /* Hidden by default */
-      position: fixed;
-      z-index: 11;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      overflow: auto;
-      background-color: rgba(0, 0, 0, 0.8);
-      align-items: center;
-      justify-content: center;
-    }
+        @keyframes dots {
 
-    .modal-content {
-      position: relative;
-      background-color: #333;
-      margin: auto;
-      padding: 20px;
-      border-radius: 10px;
-      max-width: 80%;
-      text-align: center;
-    }
+            0%,
+            20% {
+                content: '.';
+            }
 
-    .modal img {
-      width: 100%;
-      height: auto;
-      border-radius: 10px;
-    }
+            40% {
+                content: '..';
+            }
 
-    .close-btn,
-    .download-btn {
-      position: absolute;
-      top: 10px;
-      font-size: 1.2rem;
-      cursor: pointer;
-      color: #fff;
-    }
+            60% {
+                content: '...';
+            }
+        }
 
-    .close-btn {
-      right: 10px;
-      top: 4px;
-      font-size: 2rem;
-    }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            /* Default fallback */
+            backdrop-filter: blur(8px);
+            align-items: center;
+            justify-content: center;
+        }
 
-    .download-btn {
-      right: 50px;
-    }
-    
-    .main-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 5px;
-    justify-content: center;
-    align-items: center;
-    margin-top: 10%;
-    opacity: 0;
-  animation-duration: 2s;
-  animation-fill-mode: forwards;
-}
+        /* Dark theme */
+        [data-theme="dark"] .modal {
+            background: rgba(0, 0, 0, 0.9);
+        }
 
-.help {
-  font-size: 1.5rem;
-  text-align: center;
-  font-weight: 900;
-  margin-top: 60%;
-}
+        /* Light theme */
+        [data-theme="light"] .modal {
+            background: rgba(0, 0, 0, 0.7);
+        }
 
-.button {
-    background-color: #212121;
-    color: #898989; /* Set text color to white */
-    border: 1.5px solid #2e2e2e;
-    border-radius: 25px;
-    padding: 10px 13px;
-    font-size: 13px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    align-items: center;
-}
+        .modal-content {
+            background: var(--bg-secondary);
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            width: 90%;
+            max-width: 800px;
+            box-shadow: var(--shadow);
+            position: relative;
+        }
 
-.button i {
-    font-size: 15px;
-}
+        .modal img {
+            width: 100%;
+            border-radius: 0.5rem;
+            max-height: 80vh;
+        }
 
-/* Apply specific colors to each icon */
-.button:nth-child(1) i { color: #00ff66; } /* Create image icon color */
-.button:nth-child(2) i { color: #ff66ff; } /* Help me write icon color */
-.button:nth-child(3) i { color: #6699ff; } /* Code icon color */
-.button:nth-child(4) i { color: #00e6e6; } /* Surprise me icon color */
-.button:nth-child(5) i { color: #6666ff; } /* Analyze images icon color */
-.button:nth-child(6) i { color: #ffff66; } /* Brainstorm icon color */
-.button:nth-child(7) i { color: #66ffff; } /* Get advice icon color */
-.button:nth-child(8) i { color: #ff9933; } /* Summarize text icon color */
+        .close-btn,
+        .download-btn {
+            position: absolute;
+            top: 1rem;
+            color: var(--text-primary);
+            font-size: clamp(1.2rem, 3vw, 1.5rem);
+            cursor: pointer;
+            transition: color 0.3s ease, transform 0.2s ease;
+        }
 
-.button:hover {
-    background-color: #555;
-}
+        .close-btn:hover,
+        .download-btn:hover {
+            color: var(--accent);
+            transform: scale(1.1);
+        }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
+        .close-btn {
+            right: 1rem;
+            font-size: clamp(1.5rem, 4vw, 2rem);
+        }
 
+        .download-btn {
+            right: 3rem;
+        }
 
+        .main-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+            padding: 1rem;
+            margin-top: 1vh;
+            opacity: 0;
+            animation: fadeIn 2s forwards;
+        }
 
-  </style>
+        .help {
+            font-size: clamp(2rem, 4vw, 2rem);
+            text-align: center;
+            color: var(--text-primary);
+            margin: 15vh 0 2rem;
+            font-weight: 600;
+        }
+
+        .button {
+            background: var(--assistant-bubble);
+            color: var(--text-primary);
+            border: 1px solid var(--input-border);
+            border-radius: 2rem;
+            padding: clamp(0.6rem, 2vw, 0.8rem) clamp(1rem, 3vw, 1.2rem);
+            font-size: clamp(0.85rem, 2vw, 1rem);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow);
+        }
+
+        .button i {
+            font-size: clamp(1rem, 2.5vw, 1.2rem);
+        }
+
+        .button:nth-child(1) i {
+            color: #00cc66;
+        }
+
+        .button:nth-child(2) i {
+            color: #ff3366;
+        }
+
+        .button:nth-child(3) i {
+            color: #3366ff;
+        }
+
+        .button:nth-child(4) i {
+            color: #00cccc;
+        }
+
+        .button:nth-child(5) i {
+            color: #ff9900;
+        }
+
+        .button:nth-child(6) i {
+            color: #ccff33;
+        }
+
+        .button:nth-child(7) i {
+            color: #33cccc;
+        }
+
+        .button:nth-child(8) i {
+            color: #ff6633;
+        }
+
+        .button:nth-child(9) i {
+            color: #ff0000;
+        }
+
+        .button:hover {
+            background: [data-theme="dark"] ? #344066: #d1d5db;
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                width: 100%;
+                height: 100vh;
+            }
+
+            .chat-area {
+                padding: 1rem;
+                padding-bottom: 70px;
+                /* Space for fixed input bar */
+            }
+
+            .input-container {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                padding: 0.6rem;
+            }
+
+            img.generated-image {
+                width: 80%;
+            }
+        }
+
+        @media (min-width: 1200px) {
+            .container {
+                max-width: 1000px;
+            }
+
+        }
+
+        img.generated-image {
+            width: 50%;
+            border-radius: 10px;
+            margin-top: 15px;
+        }
+    </style>
 </head>
 
 <body>
-  <div class="container">
-    <div class="header">
-      <button class="info-button" onclick="showInfo()"><i class="fas fa-info-circle"></i></button>
-      ChatBHO
-      <button class="delete-button" onclick="confirmDeletion()"><i class="fas fa-trash-alt"></i>
-
-      </button>
-
-    </div>
-
-
-    <div class="chat-area" id="messages">
-      
-      <div class="help" id="helpText"></div> 
-      <div class="main-container" id="mainContainer"> 
-      <button class="button" onclick="buttonAction('Create image')">
-            <i class="fas fa-image"></i> Create image
-        </button>
-        <button class="button" onclick="buttonAction('Help me write')">
-            <i class="fas fa-pen"></i> Help me write
-        </button>
-        <button class="button" onclick="buttonAction('Code')">
-            <i class="fas fa-code"></i> Code
-        </button>
-        <button class="button" onclick="buttonAction('Meaning')">
-            <i class="fa-solid fa-language"></i> Meaning
-        </button>
-        <button class="button" onclick="buttonAction('Spell Check')">
-            <i class="fa-solid fa-spell-check"></i> Spell Check
-        </button>
-        <button class="button" onclick="buttonAction('Get advice')">
-            <i class="fas fa-graduation-cap"></i> Get advice
-        </button>
-        <button class="button" onclick="buttonAction('Summarize text')">
-            <i class="fas fa-file-alt"></i> Summarize text
-        </button>
-        <button class="button" onclick="buttonAction('Do Math')">
-            <i class="fas fa-calculator"></i> Do Math
-        </button> 
+    <div class="container">
+        <div class="header">
+            <button class="info-button" onclick="showInfo()"><i class="fas fa-info-circle"></i></button>
+            ChatBHO
+            <button class="delete-button" onclick="confirmDeletion()"><i class="fas fa-trash-alt"></i></button>
+        </div>
+        <div class="chat-area" id="messages">
+            <div class="help" id="helpText"></div>
+            <div class="main-container" id="mainContainer">
+                <button class="button" onclick="buttonAction('Create image')"><i class="fas fa-image"></i> Create
+                    image</button>
+                <button class="button" onclick="buttonAction('Help me write')"><i class="fas fa-pen"></i> Help me
+                    write</button>
+                <button class="button" onclick="buttonAction('Code')"><i class="fas fa-code"></i> Code</button>
+                <button class="button" onclick="buttonAction('Meaning')"><i class="fa-solid fa-language"></i>
+                    Meaning</button>
+                <button class="button" onclick="buttonAction('Spell Check')"><i class="fa-solid fa-spell-check"></i>
+                    Spell Check</button>
+                <button class="button" onclick="buttonAction('Get advice')"><i class="fas fa-graduation-cap"></i> Get
+                    advice</button>
+                <button class="button" onclick="buttonAction('Summarize text')"><i class="fas fa-file-alt"></i>
+                    Summarize text</button>
+                <button class="button" onclick="buttonAction('Do Math')"><i class="fas fa-calculator"></i> Do
+                    Math</button>
+                <button class="button" onclick="buttonAction('Switch Theme')"><i
+                        class="fa-solid fa-circle-half-stroke"></i>Switch Theme</button>
+            </div>
+        </div>
+        <div class="input-container">
+            <input type="text" id="inputField" placeholder="Message ChatBHO">
+            <button id="sendButton" onclick="handleUserMessage()"><i class="fas fa-arrow-up"></i></button>
         </div>
     </div>
-    
-    
-
-    <div class="input-container">
-      <input type="text" id="inputField" placeholder="Message ChatBHO">
-      <button id="sendButton" onclick="handleUserMessage()"><i class="fas fa-arrow-up"></i>
-
-      </button>
+    <div id="imageModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()"><i class="fa-solid fa-circle-xmark"></i></span>
+            <span id="downloadLink" class="download-btn" onclick="downloadImage()"><i
+                    class="fas fa-download"></i></span>
+            <img id="modalImage" alt="Generated image">
+        </div>
     </div>
-    
-    
-
-    <div class="message-box">ChatBHO can make mistakes. Check important info.</div>
-  </div>
-
-
-  <div id="imageModal" class="modal">
-    <div class="modal-content">
-      <span class="close-btn" onclick="closeModal()">&times;</span>
-      <a id="downloadLink" class="download-btn" download><i class="fas fa-download"></i></a>
-      <img id="modalImage" alt="Generated image">
-    </div>
-  </div>
-
-  <head>
-
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.js"></script>
-  </head>
-
-
-  <script>
-  function buttonAction(action) {
+    <script>
+        // Button actions
+        function buttonAction(action) {
             const inputArea = document.getElementById("inputField");
-
-            if (action === 'Create image') {
-                inputArea.value = '/imagine'; // Set the input value to /imagine
-            } 
-            
-             if (action === 'Help me write') {
-                inputArea.value = action; // Set the input value to /imagine
-            } 
-            
-            if (action === 'Code') {
-                inputArea.value = 'Write a code of';
-            }
-            
-             if (action === 'Meaning') {
-                inputArea.value = 'Meaning of';
-            }
-            
-            if (action === 'Spell Check') {
-                inputArea.value = 'Check the spelling of';
-            }
-             if (action === 'Get advice') {
-                inputArea.value = 'Give advice about';
-            }
-             if (action === 'Summarize text') {
-                inputArea.value = 'Summary of';
-            }
-             if (action === 'Do Math') {
-                inputArea.value = 'Solve A,B from equations A+B=3 and A-B =1';
-            }
+            if (action === 'Create image') { inputArea.value = '/imagine'; }
+            if (action === 'Help me write') { inputArea.value = action; }
+            if (action === 'Code') { inputArea.value = 'Write a code of'; }
+            if (action === 'Meaning') { inputArea.value = 'Meaning of'; }
+            if (action === 'Spell Check') { inputArea.value = 'Check the spelling of'; }
+            if (action === 'Get advice') { inputArea.value = 'Give advice about'; }
+            if (action === 'Summarize text') { inputArea.value = 'Summary of'; }
+            if (action === 'Do Math') { inputArea.value = 'Solve A,B from equations A+B=3 and A-B =1'; }
+            if (action === 'Switch Theme') { inputArea.value = 'Switch theme to '; }
         }
-    function openModal(imageUrl) {
-      const modal = document.getElementById("imageModal");
-      const modalImage = document.getElementById("modalImage");
-      const downloadLink = document.getElementById("downloadLink");
 
-      modal.style.display = "flex"; // Display the modal
-      modalImage.src = imageUrl; // Set the modal image source
-      downloadLink.href = imageUrl; // Set the download link to the image URL
-    }
+        let currentImageUrl = ''; // Global variable for download
 
-    // Function to close the modal
-    function closeModal() {
-      document.getElementById("imageModal").style.display = "none";
-    }
-    const inputField = document.getElementById('inputField');
-    const messages = document.getElementById('messages');
-    const sendButton = document.getElementById('sendButton');
-
-    // Escape HTML characters to prevent HTML code execution
-    function escapeHTML(str) {
-      return str.replace(/[&<>"']/g, function(char) {
-        switch (char) {
-          case '&':
-            return '&amp;';
-          case '<':
-            return '&lt;';
-          case '>':
-            return '&gt;';
-          case '"':
-            return '&quot;';
-          case "'":
-            return '&#39;';
-          default:
-            return char;
+        function openModal(imageUrl) {
+            const modal = document.getElementById("imageModal");
+            const modalImage = document.getElementById("modalImage");
+            modal.style.display = "flex";
+            modalImage.src = imageUrl;
+            currentImageUrl = imageUrl;
         }
-      });
-    }
 
-    // Function to parse Markdown-like formatting
-    // Function to parse Markdown-like formatting
-    function parseMarkdown(text) {
-      // Escape HTML characters to prevent execution of HTML code
-      text = escapeHTML(text);
-
-      // Headers: Supports # through ######
-      text = text.replace(/^######\s+(.*)$/gm, '<h6>$1</h6>');
-      text = text.replace(/^#####\s+(.*)$/gm, '<h5>$1</h5>');
-      text = text.replace(/^####\s+(.*)$/gm, '<h4>$1</h4>');
-      text = text.replace(/^###\s+(.*)$/gm, '<h3>$1</h3>');
-      text = text.replace(/^##\s+(.*)$/gm, '<h2>$1</h2>');
-      text = text.replace(/^#\s+(.*)$/gm, '<h1>$1</h1>');
-
-      // Horizontal rule (---)
-      text = text.replace(/---/g, '<div class="separator"></div>');
-
-      // Bold and Italics
-      text = text.replace(/\*\*\*(.*?)\*\*\*/g, '<strong><em>$1</em></strong>'); // Bold and Italic
-      text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); // Bold
-      text = text.replace(/_(.*?)_/g, '<em>$1</em>'); // Italic
-
-      // Inline code `code`
-      text = text.replace(/`([^`]+)`/g, '<code>$1</code>');
-
-      // Code block with ```
-      text = text.replace(/```([\s\S]+?)```/g, '<pre><code>$1</code></pre>');
-
-      // Links [text](URL)
-      text = text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
-
-      // Unordered list ( - or *)
-      text = text.replace(/(?:^|\n)[*-]\s?(.*)/g, function(match, p1) {
-        return `<ul><li>${p1}</li></ul>`;
-      });
-      text = text.replace(/<\/ul>\s*<ul>/g, ''); // Combine adjacent <ul> tags
-
-      // Ordered list (1.)
-      text = text.replace(/(?:^|\n)(\d+)\.\s?(.*)/g, function(match, p1, p2) {
-        return `<ol><li>${p2}</li></ol>`;
-      });
-      text = text.replace(/<\/ol>\s*<ol>/g, ''); // Combine adjacent <ol> tags
-
-      // Line breaks
-      text = text.replace(/\n/g, '<br>');
-      
-      
-      // Render inline math expressions \( ... \) and display math expressions \[ ... \]
-  text = text.replace(/\\\((.+?)\\\)/g, (_, expr) => katex.renderToString(expr, { throwOnError: false }));
-  text = text.replace(/\\\[(.+?)\\\]/g, (_, expr) => `<div style="text-align:center;">${katex.renderToString(expr, { throwOnError: false })}</div>`);
-
-      return text;
-    }
-
-
-
-    // Handle the user message
-    function handleUserMessage() {
-      const userMessage = inputField.value;
-      if (userMessage.trim() === "") return; // Don't send empty messages
-      displayMessage(userMessage, 'user');
-      inputField.value = '';
-      fetchAssistantResponse(userMessage);
-      document.getElementById('helpText').style.display = "none";
-      document.getElementById('mainContainer').style.display = "none"
-      
-    }
-
-    // Function to display user or assistant message
-    function displayMessage(text, sender) {
-      const messageDiv = document.createElement('div');
-      messageDiv.className = sender === 'user' ? 'user-message' : 'assistant-message';
-      messageDiv.innerHTML = parseMarkdown(text); // Use parseMarkdown to allow formatting
-      messages.appendChild(messageDiv);
-      messages.scrollTop = messages.scrollHeight; // Scroll to bottom
-    }
-
-    // Fetch assistant's response (dummy response for now)
-    // Fetch assistant's response with "please wait" message for image generation
-    async function fetchAssistantResponse(userMessage) {
-      const typingDiv = document.createElement('div');
-      typingDiv.className = 'assistant-message';
-      typingDiv.innerHTML = '<span class="typing">Assistant is typing</span>';
-      messages.appendChild(typingDiv);
-      messages.scrollTop = messages.scrollHeight;
-
-      // Check if the message starts with "/imagine"
-      if (userMessage.startsWith("/imagine")) {
-        // Extract the prompt after the /imagine command
-        const prompt = userMessage.replace("/imagine", "").trim();
-        if (prompt) {
-          try {
-            // Update to show the "please wait" message
-            typingDiv.innerHTML = '<span class="typing">Please wait while generating your image</span>';
-
-            // Generate image URL
-            const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}/?nologo=1`;
-
-            // Create an image element and set an onload event to control the "please wait" message
-            const image = document.createElement('img');
-            image.src = imageUrl;
-            image.alt = prompt;
-            image.style = "width: 80%; border-radius: 10px; margin-top: 15px;";
-
-            image.onclick = function() {
-              openModal(imageUrl); // Open the modal on image click
-            };
-
-            // Event fires only once the image is fully loaded
-            image.onload = function() {
-              // Clear the "please wait" message after the image loads
-              typingDiv.innerHTML = '';
-              messages.appendChild(image);
-              messages.scrollTop = messages.scrollHeight; // Scroll to bottom
-            };
-
-            // Append the loading message to the messages container
-            messages.appendChild(image);
-            messages.scrollTop = messages.scrollHeight; // Ensure chat scrolls down to new messages
-          } catch (error) {
-            typingDiv.innerHTML = "<span class='typing'>Error: Couldn't connect to the image server.</span>";
-          }
-        } else {
-          typingDiv.innerHTML = "<span class='typing'>Please provide a prompt after /imagine.</span>";
+        function closeModal() {
+            document.getElementById("imageModal").style.display = "none";
         }
-      } else {
-        // Handle regular text responses
-        const apiUrl = 'https://text.pollinations.ai/openai';
-        const requestBody = {
-          model: 'openai-gpt-3',
-          messages: [{ role: 'user', content: userMessage }]
-        };
 
-        try {
-          const response = await fetch(apiUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(requestBody)
-          });
-
-          if (response.ok) {
-            const data = await response.json();
-            const assistantMessage = data.choices[0].message.content;
-
-            // Parse and display the assistant's response
-            const formattedMessage = parseMarkdown(assistantMessage);
-            typingDiv.innerHTML = ''; // Clear the typing indicator
-            const messageDiv = document.createElement('div');
-            messageDiv.className = 'assistant-message';
-            messageDiv.innerHTML = formattedMessage;
-            messages.appendChild(messageDiv);
-            messages.scrollTop = messages.scrollHeight; // Scroll to bottom
-          } else {
-            typingDiv.innerHTML = "<span class='typing'>Sorry, I couldn't process your request.</span>";
-          }
-        } catch (error) {
-          typingDiv.innerHTML = "<span class='typing'>Error: Couldn't connect to the server.</span>";
+        function downloadImage() {
+            const modalImage = document.getElementById("modalImage");
+            const filename = modalImage.alt ? `${modalImage.alt.replace(/\s+/g, '_')}.png` : 'generated-image.png';
+            fetch(currentImageUrl)
+                .then(response => response.blob())
+                .then(blob => {
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.style.display = 'none';
+                    a.href = url;
+                    a.download = filename;
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+                })
+                .catch(error => {
+                    console.error('Error downloading image:', error);
+                    alert('Failed to download the image. Please try again.');
+                });
         }
-      }
-    }
 
-    // Typing effect of help
-    const text = "What can I help with?";
-    const speed = 50; // typing speed in milliseconds
-    let index = 0;
+        const inputField = document.getElementById('inputField');
+        const messages = document.getElementById('messages');
+        const sendButton = document.getElementById('sendButton');
 
-    function typeWriter() {
-      if (index < text.length) {
-        document.getElementById("helpText").innerHTML += text.charAt(index);
-        index++;
-        setTimeout(typeWriter, speed);
-      }
-    }
-
-    // Show info popup using SweetAlert2
-    function showInfo() {
-      Swal.fire({
-          title: 'Welcome to ChatBHO!',
-          html: `
-      <p style="color: #bbb; font-size: 1rem; line-height: 1.5;">
-        ChatBHO is your virtual assistant. Here’s how to get started:
-      </p><br>
-      <ul style="color: #bbb; font-size: 0.9rem; line-height: 1.4; padding-left: 10px;text-align: justify">
-        <li><strong>/ imagine</strong>: Type this followed by a description to generate images.</li><br>
-        <li><strong>Languages Support</strong>: English, Spanish, French, German, Italian, Portuguese, Dutch, Russian, Chinese (Simplified and Traditional), Japanese, Korean, Arabic, Hindi, Bengali, Turkish</li><br>
-      </ul>
-      <p style="color: #bbb; font-size: 1rem; line-height: 1.5;">
-        Use the text input at the bottom to type your commands or questions.
-      </p>
-    `,
-          icon: 'info',
-          confirmButtonText: 'Got it!',
-          background: '#212121',
-          color: '#d1d5db',
-          confirmButtonColor: '#333'
-        })
-        .then(() => {
-          // Start the typewriter effect after the user closes the info alert
-          typeWriter();
-          fadeInMainContainer();
-          
+        // Add Enter key listener
+        inputField.addEventListener('keydown', function (event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                handleUserMessage();
+            }
         });
-    }
-    // Start typing effect when page loads
-    window.onload = showInfo;
 
-
-    function confirmDeletion() {
-      Swal.fire({
-        title: 'Are you sure?',
-        text: "You won't be able to revert this action!",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Yes, delete it!',
-        cancelButtonText: 'No, cancel!',
-        reverseButtons: true,
-        background: '#212121', // Background color
-        color: '#d1d5db', // Text color
-        confirmButtonColor: '#333', // Confirm button color
-        cancelButtonColor: '#d1d5db', // Cancel button color
-      }).then((result) => {
-        if (result.isConfirmed) {
-          // If 'Yes' is clicked, reload the page
-          location.reload();
-        } else if (result.dismiss === Swal.DismissReason.cancel) {
-          // If 'No' is clicked, show a custom styled cancel message
-          Swal.fire({
-            title: 'Cancelled',
-            text: 'Your messages are safe.',
-            icon: 'error',
-            background: '#212121', // Background color
-            color: '#d1d5db', // Text color
-            confirmButtonColor: '#333' // Confirm button color
-          });
+        function escapeHTML(str) {
+            return str.replace(/[&<>"']/g, function (char) {
+                switch (char) {
+                    case '&': return '&amp;';
+                    case '<': return '&lt;';
+                    case '>': return '&gt;';
+                    case '"': return '&quot;';
+                    case "'": return '&#39;';
+                    default: return char;
+                }
+            });
         }
-      });
-    }
-    
-    
-    function fadeInMainContainer() {
-  const mainContainer = document.getElementById('mainContainer');
-  mainContainer.style.display = 'flex'; // Show the container
-  mainContainer.style.animationName = 'fadeIn'; // Trigger the fade-in animation
-}
-  </script>
+
+        function parseMarkdown(text) {
+            text = escapeHTML(text);
+            text = text.replace(/^######\s+(.*)$/gm, '<h6>$1</h6>');
+            text = text.replace(/^#####\s+(.*)$/gm, '<h5>$1</h5>');
+            text = text.replace(/^####\s+(.*)$/gm, '<h4>$1</h4>');
+            text = text.replace(/^###\s+(.*)$/gm, '<h3>$1</h3>');
+            text = text.replace(/^##\s+(.*)$/gm, '<h2>$1</h2>');
+            text = text.replace(/^#\s+(.*)$/gm, '<h1>$1</h1>');
+            text = text.replace(/---/g, '<div class="separator"></div>');
+            text = text.replace(/\*\*\*(.*?)\*\*\*/g, '<strong><em>$1</em></strong>');
+            text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            text = text.replace(/_(.*?)_/g, '<em>$1</em>');
+            text = text.replace(/`([^`]+)`/g, '<code>$1</code>');
+            text = text.replace(/```([\s\S]+?)```/g, '<pre><code>$1</code></pre>');
+            text = text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
+            text = text.replace(/(?:^|\n)[*-]\s?(.*)/g, function (match, p1) {
+                return `<ul><li>${p1}</li></ul>`;
+            });
+            text = text.replace(/<\/ul>\s*<ul>/g, '');
+            text = text.replace(/(?:^|\n)(\d+)\.\s?(.*)/g, function (match, p1, p2) {
+                return `<ol><li>${p2}</li></ol>`;
+            });
+            text = text.replace(/<\/ol>\s*<ol>/g, '');
+            text = text.replace(/\n/g, '<br>');
+            text = text.replace(/\\\((.*?)\\\)/g, (match, expr) => {
+                try {
+                    const cleanedExpr = expr.replace(/[VN]/g, '').replace(/<br\s*\/?>/gi, '').trim();
+                    return katex.renderToString(cleanedExpr, { throwOnError: false, displayMode: false, output: 'html' });
+                } catch (error) {
+                    return `<span class="math-error">${escapeHTML(expr)}</span>`;
+                }
+            });
+            text = text.replace(/\\\[(.+?)\\\]/g, (match, expr) => {
+                try {
+                    const cleanedExpr = expr.replace(/[VN]/g, '').replace(/<br\s*\/?>/gi, '').trim();
+                    return `<div class="katex-display">${katex.renderToString(cleanedExpr, { throwOnError: false, displayMode: true, output: 'html' })}</div>`;
+                } catch (error) {
+                    return `<div class="math-error">${escapeHTML(expr)}</div>`;
+                }
+            });
+            text = text.replace(/\\\(|\\\)|\\\[|\\\]/g, '');
+            return text;
+        }
+
+        // Load messages from localStorage on page load
+        function loadMessages() {
+            // Load theme
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme) {
+                document.documentElement.setAttribute('data-theme', savedTheme);
+            } else {
+                document.documentElement.setAttribute('data-theme', 'dark'); // Default to dark if no theme saved
+            }
+
+            // Load messages
+            const savedMessages = localStorage.getItem('chatMessages');
+            if (savedMessages) {
+                const chatData = JSON.parse(savedMessages);
+                chatData.forEach(item => {
+                    if (item.type === 'text') {
+                        displayMessage(item.content, item.sender);
+                    } else if (item.type === 'image') {
+                        const image = document.createElement('img');
+                        image.src = item.url;
+                        image.alt = item.alt;
+                        image.className = "generated-image";
+                        image.onclick = function () { openModal(item.url); };
+                        messages.appendChild(image);
+                        messages.scrollTop = messages.scrollHeight;
+                    }
+                });
+            } else {
+                messages.innerHTML = `
+                    <div class="help" id="helpText"></div>
+                    <div class="main-container" id="mainContainer">
+                        <button class="button" onclick="buttonAction('Create image')"><i class="fas fa-image"></i> Create image</button>
+                        <button class="button" onclick="buttonAction('Help me write')"><i class="fas fa-pen"></i> Help me write</button>
+                        <button class="button" onclick="buttonAction('Code')"><i class="fas fa-code"></i> Code</button>
+                        <button class="button" onclick="buttonAction('Meaning')"><i class="fa-solid fa-language"></i> Meaning</button>
+                        <button class="button" onclick="buttonAction('Spell Check')"><i class="fa-solid fa-spell-check"></i> Spell Check</button>
+                        <button class="button" onclick="buttonAction('Get advice')"><i class="fas fa-graduation-cap"></i> Get advice</button>
+                        <button class="button" onclick="buttonAction('Summarize text')"><i class="fas fa-file-alt"></i> Summarize text</button>
+                        <button class="button" onclick="buttonAction('Do Math')"><i class="fas fa-calculator"></i> Do Math</button>
+                        <button class="button" onclick="buttonAction('Switch Theme')"><i class="fa-solid fa-circle-half-stroke"></i>Switch Theme</button>
+                    </div>
+                `;
+                typeWriter();
+            }
+        }
+
+        // Save to localStorage (for messages and images)
+        function saveToLocalStorage(type, content, sender = null, url = null, alt = null) {
+            const savedMessages = localStorage.getItem('chatMessages');
+            const chatData = savedMessages ? JSON.parse(savedMessages) : [];
+            if (type === 'text') {
+                chatData.push({ type: 'text', content, sender });
+            } else if (type === 'image') {
+                chatData.push({ type: 'image', url, alt });
+            }
+            localStorage.setItem('chatMessages', JSON.stringify(chatData));
+        }
+
+        function handleUserMessage() {
+            const userMessage = inputField.value.trim();
+            if (userMessage === "") return;
+
+            displayMessage(userMessage, 'user');
+            saveToLocalStorage('text', userMessage, 'user'); // Save user message
+            inputField.value = '';
+            document.getElementById('helpText').style.display = "none";
+            document.getElementById('mainContainer').style.display = "none";
+
+            const lowerMessage = userMessage.toLowerCase();
+            if (lowerMessage === "switch theme to dark") {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark'); // Save theme
+                displayMessage("Switched to dark theme!", 'assistant');
+                saveToLocalStorage('text', "Switched to dark theme!", 'assistant');
+            } else if (lowerMessage === "switch theme to light") {
+                document.documentElement.setAttribute('data-theme', 'light');
+                localStorage.setItem('theme', 'light'); // Save theme
+                displayMessage("Switched to light theme!", 'assistant');
+                saveToLocalStorage('text', "Switched to light theme!", 'assistant');
+            } else {
+                fetchAssistantResponse(userMessage);
+            }
+        }
+
+        function displayMessage(text, sender) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = sender === 'user' ? 'user-message' : 'assistant-message';
+            messageDiv.innerHTML = parseMarkdown(text);
+            messages.appendChild(messageDiv);
+            messages.scrollTop = messages.scrollHeight;
+        }
+
+        async function fetchAssistantResponse(userMessage) {
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'assistant-message';
+            typingDiv.innerHTML = '<span class="typing">Assistant is typing</span>';
+            messages.appendChild(typingDiv);
+            messages.scrollTop = messages.scrollHeight;
+
+            if (userMessage.startsWith("/imagine")) {
+                const prompt = userMessage.replace("/imagine", "").trim();
+                if (prompt) {
+                    try {
+                        typingDiv.innerHTML = '<span class="typing">Please wait while generating your image</span>';
+                        const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}/?nologo=1`;
+                        const image = document.createElement('img');
+                        image.src = imageUrl;
+                        image.alt = prompt;
+                        image.className = "generated-image";
+                        image.onclick = function () { openModal(imageUrl); };
+                        image.onload = function () {
+                            typingDiv.innerHTML = '';
+                            messages.appendChild(image);
+                            saveToLocalStorage('image', null, null, imageUrl, prompt); // Save image
+                            messages.scrollTop = messages.scrollHeight;
+                        };
+                        messages.appendChild(image);
+                        messages.scrollTop = messages.scrollHeight;
+                    } catch (error) {
+                        typingDiv.innerHTML = "<span class='typing'>Error: Couldn't connect to the image server.</span>";
+                        saveToLocalStorage('text', "Error: Couldn't connect to the image server.", 'assistant');
+                    }
+                } else {
+                    typingDiv.innerHTML = "<span class='typing'>Please provide a prompt after /imagine.</span>";
+                    saveToLocalStorage('text', "Please provide a prompt after /imagine.", 'assistant');
+                }
+            } else {
+                const apiUrl = 'https://text.pollinations.ai/openai';
+                const requestBody = {
+                    model: 'openai-gpt-3',
+                    messages: [{ role: 'user', content: userMessage }]
+                };
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(requestBody)
+                    });
+                    if (response.ok) {
+                        const data = await response.json();
+                        const assistantMessage = data.choices[0].message.content;
+                        const formattedMessage = parseMarkdown(assistantMessage);
+                        typingDiv.innerHTML = '';
+                        const messageDiv = document.createElement('div');
+                        messageDiv.className = 'assistant-message';
+                        messageDiv.innerHTML = formattedMessage;
+                        messages.appendChild(messageDiv);
+                        saveToLocalStorage('text', assistantMessage, 'assistant'); // Save assistant response
+                        messages.scrollTop = messages.scrollHeight;
+                    } else {
+                        typingDiv.innerHTML = "<span class='typing'>Sorry, I couldn't process your request.</span>";
+                        saveToLocalStorage('text', "Sorry, I couldn't process your request.", 'assistant');
+                    }
+                } catch (error) {
+                    typingDiv.innerHTML = "<span class='typing'>Error: Couldn't connect to the server.</span>";
+                    saveToLocalStorage('text', "Error: Couldn't connect to the server.", 'assistant');
+                }
+            }
+        }
+
+        const text = "What can I help with?";
+        const speed = 50;
+        let index = 0;
+
+        function typeWriter() {
+            if (index < text.length) {
+                document.getElementById("helpText").innerHTML += text.charAt(index);
+                index++;
+                setTimeout(typeWriter, speed);
+            }
+        }
+
+        function showInfo() {
+            Swal.fire({
+                title: 'Welcome to ChatBHO!',
+                html: `
+                    <p style="color: #bbb; font-size: 1rem; line-height: 1.5;">
+                        ChatBHO is your virtual assistant. Here’s how to get started:
+                    </p><br>
+                    <ul style="color: #bbb; font-size: 0.9rem; line-height: 1.4; padding-left: 10px; text-align: justify">
+                        <li><strong>/imagine</strong>: Type this followed by a description to generate images.</li><br>
+                        <li><strong>Languages Support</strong>: English, Spanish, French, German, Italian, Portuguese, Dutch, Russian, Chinese (Simplified and Traditional), Japanese, Korean, Arabic, Hindi, Bengali, Turkish</li><br>
+                    </ul>
+                    <p style="color: #bbb; font-size: 1rem; line-height: 1.5;">
+                        Use the text input at the bottom to type your commands or questions.
+                    </p>
+                `,
+                icon: 'info',
+                confirmButtonText: 'Got it!',
+                background: '#212121',
+                color: '#d1d5db',
+                confirmButtonColor: '#333'
+            });
+        }
+
+        function confirmDeletion() {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this action!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'No, cancel!',
+                reverseButtons: true,
+                background: '#212121',
+                color: '#d1d5db',
+                confirmButtonColor: '#333',
+                cancelButtonColor: '#ff0000'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    messages.innerHTML = '';
+                    localStorage.removeItem('chatMessages'); // Clear messages
+                    localStorage.removeItem('theme'); // Clear theme (resets to default on reload)
+                    document.documentElement.setAttribute('data-theme', 'dark'); // Reset to default immediately
+                    messages.innerHTML = `
+                        <div class="help" id="helpText"></div>
+                        <div class="main-container" id="mainContainer">
+                            <button class="button" onclick="buttonAction('Create image')"><i class="fas fa-image"></i> Create image</button>
+                            <button class="button" onclick="buttonAction('Help me write')"><i class="fas fa-pen"></i> Help me write</button>
+                            <button class="button" onclick="buttonAction('Code')"><i class="fas fa-code"></i> Code</button>
+                            <button class="button" onclick="buttonAction('Meaning')"><i class="fa-solid fa-language"></i> Meaning</button>
+                            <button class="button" onclick="buttonAction('Spell Check')"><i class="fa-solid fa-spell-check"></i> Spell Check</button>
+                            <button class="button" onclick="buttonAction('Get advice')"><i class="fas fa-graduation-cap"></i> Get advice</button>
+                            <button class="button" onclick="buttonAction('Summarize text')"><i class="fas fa-file-alt"></i> Summarize text</button>
+                            <button class="button" onclick="buttonAction('Do Math')"><i class="fas fa-calculator"></i> Do Math</button>
+                            <button class="button" onclick="buttonAction('Switch Theme')"><i class="fa-solid fa-circle-half-stroke"></i>Switch Theme</button>
+                        </div>
+                    `;
+                    index = 0; // Reset typewriter index
+                    typeWriter();
+                } else if (result.dismiss === Swal.DismissReason.cancel) {
+                    Swal.fire({
+                        title: 'Cancelled',
+                        text: 'Your messages are safe.',
+                        icon: 'error',
+                        background: '#212121',
+                        color: '#d1d5db',
+                        confirmButtonColor: '#333'
+                    });
+                }
+            });
+        }
+
+        function fadeInMainContainer() {
+            const mainContainer = document.getElementById('mainContainer');
+            mainContainer.style.display = 'flex';
+            mainContainer.style.animationName = 'fadeIn';
+        }
+
+        // Load messages on page load
+        window.onload = function () {
+            loadMessages();
+        };
+    </script>
 </body>
 
 </html>
