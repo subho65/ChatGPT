@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.css">
+    <!-- Default favicon (dark mode) -->
+    <link rel="icon" type="image/png" href="https://via.placeholder.com/32/FFFFFF/000000?text=C" id="favicon">
+    <title>Contact Us - ChatBHO</title>
+    <style>
+        :root,
+        [data-theme="dark"] {
+            --bg-primary: #141c2f;
+            --bg-secondary: #1e2a44;
+            --accent: #00b7ff;
+            --text-primary: #d9e1e8;
+            --text-secondary: #8a94a6;
+            --shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            --radius: 0.8rem;
+            --input-border: #3a4666;
+            --separator: #2e3b5a;
+            --error-color: #ff6b6b;
+        }
+
+        [data-theme="light"] {
+            --bg-primary: #f5f7fa;
+            --bg-secondary: #ffffff;
+            --accent: #007bff;
+            --text-primary: #1a2a44;
+            --text-secondary: #6b7280;
+            --shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            --radius: 0.8rem;
+            --input-border: #d1d5db;
+            --separator: #d1d5db;
+            --error-color: #e53e3e;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+            flex: 1;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--accent);
+            border-bottom: 1px solid var(--separator);
+        }
+
+        
+
+        .info-button,
+        .home-button {
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .info-button:hover,
+        .home-button:hover {
+            color: var(--accent);
+        }
+
+        .content {
+            padding: 2rem 0;
+        }
+
+        .content h1 {
+            font-size: 2rem;
+            color: var(--accent);
+            margin-bottom: 1.5rem;
+        }
+
+        .content p {
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid var(--input-border);
+            border-radius: var(--radius);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 1rem;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            border-color: var(--accent);
+            outline: none;
+        }
+
+        [data-theme="dark"] .form-group input:focus,
+        [data-theme="dark"] .form-group textarea:focus {
+            background: #253054;
+        }
+
+        [data-theme="light"] .form-group input:focus,
+        [data-theme="light"] .form-group textarea:focus {
+            background: #f0f4f8;
+        }
+
+        .form-group textarea {
+            height: 150px;
+            resize: vertical;
+        }
+
+        .submit-button {
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: var(--radius);
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .submit-button:hover {
+            background: #0099d6;
+        }
+
+        .submit-button:disabled {
+            background: var(--text-secondary);
+            cursor: not-allowed;
+        }
+
+        .success-message,
+        .error-message {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: var(--radius);
+            display: none;
+        }
+
+        .success-message {
+            background: #2a3555;
+            color: #00cc00;
+        }
+
+        [data-theme="light"] .success-message {
+            background: #e5e7eb;
+        }
+
+        .error-message {
+            background: #2a3555;
+            color: var(--error-color);
+        }
+
+        [data-theme="light"] .error-message {
+            background: #e5e7eb;
+        }
+
+        footer {
+            text-align: center;
+            padding: 1rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            border-top: 1px solid var(--separator);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <button class="info-button" onclick="window.location.href='about.html'"><i
+                    class="fas fa-info-circle"></i></button>
+           
+            Contact Us
+            <button class="home-button" onclick="window.location.href='index.html'"><i class="fas fa-home"></i></button>
+        </div>
+        <div class="content">
+            <h1>Contact Us</h1>
+            <p>Have a question, suggestion, or need to report an issue? Fill out the form below, and we’ll get back to
+                you as soon as possible!</p>
+            <form id="contactForm">
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input type="text" id="name" name="name" placeholder="Your Name" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" placeholder="Your Email" required>
+                </div>
+                <div class="form-group">
+                    <label for="subject">Subject</label>
+                    <input type="text" id="subject" name="subject" placeholder="Subject" required>
+                </div>
+                <div class="form-group">
+                    <label for="message">Message</label>
+                    <textarea id="message" name="message" placeholder="Your Message" required></textarea>
+                </div>
+                <button type="submit" class="submit-button" id="submitButton">Send Message</button>
+                <div class="success-message" id="successMessage">Thank you! Your message has been sent, and we’ve
+                    emailed you a confirmation.</div>
+                <div class="error-message" id="errorMessage">Oops! Something went wrong. Please try again.</div>
+            </form>
+        </div>
+    </div>
+
+    <footer>
+        © 2025 ChatBHO. All rights reserved.
+    </footer>
+
+    <!-- EmailJS SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script>
+        console.log("Contact page script loaded successfully");
+
+        // Initialize EmailJS with your Public Key
+        (function () {
+            emailjs.init("S0YywbX4VZwK7LRd6"); // Replace with your EmailJS Public Key
+        })();
+
+        // Load theme and assets from localStorage
+        function loadThemeAssets() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme) {
+                document.documentElement.setAttribute('data-theme', savedTheme);
+                updateThemeAssets(savedTheme);
+            } else {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                updateThemeAssets('dark');
+            }
+        }
+
+
+        // Handle form submission with EmailJS (report + auto-reply)
+        document.getElementById('contactForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            const submitButton = document.getElementById('submitButton');
+            const successMessage = document.getElementById('successMessage');
+            const errorMessage = document.getElementById('errorMessage');
+
+            submitButton.disabled = true;
+            submitButton.textContent = 'Sending...';
+            successMessage.style.display = 'none';
+            errorMessage.style.display = 'none';
+
+            const formData = {
+                name: document.getElementById('name').value,
+                email: document.getElementById('email').value,
+                subject: document.getElementById('subject').value,
+                message: document.getElementById('message').value
+            };
+
+            // Send the report email to you
+            emailjs.send('service_chatbho', 'template_chatbho', formData)
+                .then(function (response) {
+                    console.log('Report email sent successfully!', response.status, response.text);
+
+                    // Send the auto-reply email to the user
+                    return emailjs.send('service_chatbho', 'template_autoreply', formData);
+                })
+                .then(function (response) {
+                    console.log('Auto-reply email sent successfully!', response.status, response.text);
+                    successMessage.style.display = 'block';
+                    document.getElementById('contactForm').reset();
+                })
+                .catch(function (error) {
+                    console.log('FAILED...', error);
+                    errorMessage.style.display = 'block';
+                })
+                .finally(function () {
+                    submitButton.disabled = false;
+                    submitButton.textContent = 'Send Message';
+                });
+        });
+
+        window.onload = function () {
+            console.log("Window loaded, loading theme assets");
+            loadThemeAssets();
+        };
+    </script>
+</body>
+
+</html>

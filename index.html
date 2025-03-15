@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.css">
+    <link rel="icon" type="image/png" href="dark.png" id="favicon">
     <title>ChatBHO</title>
     <style>
         :root,
@@ -481,6 +482,164 @@
             border-radius: 10px;
             margin-top: 15px;
         }
+
+        /* Existing Modal Styles (keep these) */
+        #infoModal,
+        #deleteModal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+            align-items: center;
+            justify-content: center;
+        }
+
+        [data-theme="dark"] #infoModal,
+        [data-theme="dark"] #deleteModal {
+            background: rgba(0, 0, 0, 0.9);
+        }
+
+        [data-theme="light"] #infoModal,
+        [data-theme="light"] #deleteModal {
+            background: rgba(0, 0, 0, 0.7);
+        }
+
+        /* Updated Info Modal Content Styles */
+        .info-modal-content,
+        .delete-modal-content {
+            background: var(--bg-secondary);
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            width: 90%;
+            /* Default for smaller screens */
+            max-width: 500px;
+            /* Default max-width for mobile */
+            box-shadow: var(--shadow);
+            position: relative;
+            color: var(--text-primary);
+            max-height: 80vh;
+            /* Limit height to 80% of viewport height */
+            overflow-y: auto;
+            /* Enable vertical scrolling */
+        }
+
+        /* Media Query for Laptops (wider modal) */
+        @media (min-width: 768px) {
+
+            .info-modal-content,
+            .delete-modal-content {
+                width: 70%;
+                /* Wider on larger screens */
+                max-width: 800px;
+                /* Increased max-width for laptops */
+            }
+        }
+
+        /* Rest of your modal styles remain unchanged */
+        .info-modal-content h2,
+        .delete-modal-content h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--accent);
+        }
+
+        .info-modal-content h3 {
+            font-size: 1.2rem;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .info-modal-content p,
+        .delete-modal-content p {
+            font-size: 1rem;
+            line-height: 1.5;
+            margin-bottom: 1rem;
+        }
+
+        .info-modal-content ul {
+            font-size: 0.9rem;
+            line-height: 1.4;
+            padding-left: 20px;
+            text-align: justify;
+            margin-bottom: 1rem;
+        }
+
+        .info-modal-content ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        .modal-button {
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .modal-button:hover {
+            background: #0099d6;
+        }
+
+        .modal-button.cancel {
+            background: var(--error-color);
+        }
+
+        .modal-button.cancel:hover {
+            background: #e53e3e;
+        }
+
+        .close-info-btn,
+        .close-delete-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.3s ease, transform 0.2s ease;
+        }
+
+        .close-info-btn:hover,
+        .close-delete-btn:hover {
+            color: var(--accent);
+            transform: scale(1.1);
+        }
+
+        .header-logo {
+            width: auto;
+            /* Adjust size as needed */
+            height: 40px;
+            margin-right: 0.5rem;
+            /* Space between logo and text */
+            border-radius: none;
+            /* Optional: makes it circular */
+            vertical-align: middle;
+            /* Aligns with text */
+        }
+
+        [data-theme="dark"] .header-logo {
+    content: url("dark.png"); /* Light logo for dark mode */
+}
+
+/* Light mode logo */
+[data-theme="light"] .header-logo {
+    content: url("light.png"); /* Dark logo for light mode */
+}
+
     </style>
 </head>
 
@@ -488,6 +647,7 @@
     <div class="container">
         <div class="header">
             <button class="info-button" onclick="showInfo()"><i class="fas fa-info-circle"></i></button>
+            <img src="dark.png" alt="ChatBHO Logo" class="header-logo">
             ChatBHO
             <button class="delete-button" onclick="confirmDeletion()"><i class="fas fa-trash-alt"></i></button>
         </div>
@@ -527,20 +687,84 @@
         </div>
     </div>
 
+    <!-- New Info Modal -->
+    <!-- New Info Modal with Expanded Content -->
+    <div id="infoModal" class="modal">
+        <div class="info-modal-content">
+            <span class="close-info-btn" onclick="closeInfoModal()"><i class="fa-solid fa-circle-xmark"></i></span>
+            <h2>Welcome to ChatBHO!</h2>
+            <p>ChatBHO is your versatile virtual assistant designed to assist with a wide range of tasks. Here’s how to
+                get
+                started and make the most of its capabilities:</p>
+            <h3>Key Features</h3>
+            <ul>
+                <li><strong>Image Generation</strong>: Use <code>/imagine</code> followed by a description (e.g.,
+                    "/imagine
+                    a futuristic city") to create unique images.</li>
+                <li><strong>Multilingual Support</strong>: ChatBHO understands and responds in multiple languages,
+                    including
+                    English, Spanish, French, German, Italian, Portuguese, Dutch, Russian, Chinese (Simplified and
+                    Traditional), Japanese, Korean, Arabic, Hindi, Bengali, and Turkish.</li>
+                <li><strong>Text Assistance</strong>: Get help with writing, coding, spell-checking, summarizing text,
+                    solving math problems, and more using the buttons or direct input.</li>
+                <li><strong>Theme Switching</strong>: Switch between dark and light themes with "Switch theme to dark"
+                    or
+                    "Switch theme to light". Your preference is saved!</li>
+                <li><strong>Persistent Chat</strong>: Messages and images are stored in your browser’s local storage, so
+                    your chat history persists across refreshes until you delete it.</li>
+            </ul>
+            <h3>Usage Tips</h3>
+            <ul>
+                <li>Use the buttons in the chat area to quickly start common tasks, or type your questions directly.
+                </li>
+                <li>For math, try LaTeX-style input (e.g., "\((x^2 + 3)\)") for formatted equations.</li>
+                <li>Images can be clicked to view full-size and downloaded via the modal.</li>
+                <li>Clear your chat history using the trash icon in the header—don’t worry, it asks for confirmation!
+                </li>
+            </ul>
+            <h3>Examples</h3>
+            <ul>
+                <li><strong>Image</strong>: "/imagine a serene mountain landscape at sunset"</li>
+                <li><strong>Math</strong>: "Solve \(x^2 - 5x + 6 = 0\)"</li>
+                <li><strong>Writing</strong>: "Help me write a letter to a friend"</li>
+                <li><strong>Code</strong>: "Write a code of a simple calculator in Python"</li>
+                <li><strong>Summary</strong>: "Summary of the last chapter of 'To Kill a Mockingbird'"</li>
+            </ul>
+            <p>Use the text input at the bottom to type your commands or questions. ChatBHO is here to help with almost
+                anything—give it a try!</p>
+            <p><b>N.B. - ChatGPT can make mistakes. <a href="about.html">Check important info.</a></b></p>
+            <div class="modal-buttons">
+                <button class="modal-button" onclick="closeInfoModal()">Got it!</button>
+            </div>
+        </div>
+    </div>
+    <!-- New Delete Confirmation Modal -->
+    <div id="deleteModal" class="modal">
+        <div class="delete-modal-content">
+            <span class="close-delete-btn" onclick="closeDeleteModal()"><i class="fa-solid fa-circle-xmark"></i></span>
+            <h2>Are you sure?</h2>
+            <p>You won't be able to revert this action!</p>
+            <div class="modal-buttons">
+                <button class="modal-button cancel" onclick="closeDeleteModal()">No, cancel!</button>
+                <button class="modal-button" onclick="deleteMessages()">Yes, delete it!</button>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.js"></script>
     <script>
         // Button actions
         function buttonAction(action) {
             const inputArea = document.getElementById("inputField");
-            if (action === 'Create image') { inputArea.value = '/imagine'; }
+            if (action === 'Create image') { inputArea.value = '/imagine '; }
             if (action === 'Help me write') { inputArea.value = action; }
-            if (action === 'Code') { inputArea.value = 'Write a code of'; }
-            if (action === 'Meaning') { inputArea.value = 'Meaning of'; }
-            if (action === 'Spell Check') { inputArea.value = 'Check the spelling of'; }
-            if (action === 'Get advice') { inputArea.value = 'Give advice about'; }
+            if (action === 'Code') { inputArea.value = 'Write a code of '; }
+            if (action === 'Meaning') { inputArea.value = 'Meaning of '; }
+            if (action === 'Spell Check') { inputArea.value = 'Check the spelling of '; }
+            if (action === 'Get advice') { inputArea.value = 'Give advice about '; }
             if (action === 'Summarize text') { inputArea.value = 'Summary of'; }
-            if (action === 'Do Math') { inputArea.value = 'Solve A,B from equations A+B=3 and A-B =1'; }
+            if (action === 'Do Math') { inputArea.value = 'Solve A,B from equations A+B=3 and A-B =1 '; }
             if (action === 'Switch Theme') { inputArea.value = 'Switch theme to '; }
         }
 
@@ -691,6 +915,7 @@
                         <button class="button" onclick="buttonAction('Switch Theme')"><i class="fa-solid fa-circle-half-stroke"></i>Switch Theme</button>
                     </div>
                 `;
+                index = 0;
                 typeWriter();
             }
         }
@@ -753,7 +978,7 @@
                 if (prompt) {
                     try {
                         typingDiv.innerHTML = '<span class="typing">Please wait while generating your image</span>';
-                        const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}/?nologo=1`;
+                        const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}/?nologo=1&width=1920&height=1920`;
                         const image = document.createElement('img');
                         image.src = imageUrl;
                         image.alt = prompt;
@@ -821,77 +1046,55 @@
             }
         }
 
+        // Updated showInfo with modal
         function showInfo() {
-            Swal.fire({
-                title: 'Welcome to ChatBHO!',
-                html: `
-                    <p style="color: #bbb; font-size: 1rem; line-height: 1.5;">
-                        ChatBHO is your virtual assistant. Here’s how to get started:
-                    </p><br>
-                    <ul style="color: #bbb; font-size: 0.9rem; line-height: 1.4; padding-left: 10px; text-align: justify">
-                        <li><strong>/imagine</strong>: Type this followed by a description to generate images.</li><br>
-                        <li><strong>Languages Support</strong>: English, Spanish, French, German, Italian, Portuguese, Dutch, Russian, Chinese (Simplified and Traditional), Japanese, Korean, Arabic, Hindi, Bengali, Turkish</li><br>
-                    </ul>
-                    <p style="color: #bbb; font-size: 1rem; line-height: 1.5;">
-                        Use the text input at the bottom to type your commands or questions.
-                    </p>
-                `,
-                icon: 'info',
-                confirmButtonText: 'Got it!',
-                background: '#212121',
-                color: '#d1d5db',
-                confirmButtonColor: '#333'
-            });
+            document.getElementById("infoModal").style.display = "flex";
         }
 
+        function closeInfoModal() {
+            document.getElementById("infoModal").style.display = "none";
+        }
+
+
+        // Updated confirmDeletion with modal
         function confirmDeletion() {
-            Swal.fire({
-                title: 'Are you sure?',
-                text: "You won't be able to revert this action!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Yes, delete it!',
-                cancelButtonText: 'No, cancel!',
-                reverseButtons: true,
-                background: '#212121',
-                color: '#d1d5db',
-                confirmButtonColor: '#333',
-                cancelButtonColor: '#ff0000'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    messages.innerHTML = '';
-                    localStorage.removeItem('chatMessages'); // Clear messages
-                    localStorage.removeItem('theme'); // Clear theme (resets to default on reload)
-                    document.documentElement.setAttribute('data-theme', 'dark'); // Reset to default immediately
-                    messages.innerHTML = `
-                        <div class="help" id="helpText"></div>
-                        <div class="main-container" id="mainContainer">
-                            <button class="button" onclick="buttonAction('Create image')"><i class="fas fa-image"></i> Create image</button>
-                            <button class="button" onclick="buttonAction('Help me write')"><i class="fas fa-pen"></i> Help me write</button>
-                            <button class="button" onclick="buttonAction('Code')"><i class="fas fa-code"></i> Code</button>
-                            <button class="button" onclick="buttonAction('Meaning')"><i class="fa-solid fa-language"></i> Meaning</button>
-                            <button class="button" onclick="buttonAction('Spell Check')"><i class="fa-solid fa-spell-check"></i> Spell Check</button>
-                            <button class="button" onclick="buttonAction('Get advice')"><i class="fas fa-graduation-cap"></i> Get advice</button>
-                            <button class="button" onclick="buttonAction('Summarize text')"><i class="fas fa-file-alt"></i> Summarize text</button>
-                            <button class="button" onclick="buttonAction('Do Math')"><i class="fas fa-calculator"></i> Do Math</button>
-                            <button class="button" onclick="buttonAction('Switch Theme')"><i class="fa-solid fa-circle-half-stroke"></i>Switch Theme</button>
-                        </div>
-                    `;
-                    index = 0; // Reset typewriter index
-                    typeWriter();
-                } else if (result.dismiss === Swal.DismissReason.cancel) {
-                    Swal.fire({
-                        title: 'Cancelled',
-                        text: 'Your messages are safe.',
-                        icon: 'error',
-                        background: '#212121',
-                        color: '#d1d5db',
-                        confirmButtonColor: '#333'
-                    });
-                }
-            });
+            document.getElementById("deleteModal").style.display = "flex";
         }
 
+        function closeDeleteModal() {
+            document.getElementById("deleteModal").style.display = "none";
+            // Show cancellation message in a temporary div (mimicking Swal)
+            const tempMessage = document.createElement('div');
+            tempMessage.className = 'assistant-message';
+            tempMessage.innerHTML = parseMarkdown("Cancelled: Your messages are safe.");
+            messages.appendChild(tempMessage);
+            messages.scrollTop = messages.scrollHeight;
+            setTimeout(() => tempMessage.remove(), 2000); // Remove after 2 seconds
+        }
+
+        function deleteMessages() {
+            messages.innerHTML = '';
+            localStorage.removeItem('chatMessages');
+            localStorage.removeItem('theme');
+            document.documentElement.setAttribute('data-theme', 'dark');
+            messages.innerHTML = `
+                <div class="help" id="helpText"></div>
+                <div class="main-container" id="mainContainer">
+                    <button class="button" onclick="buttonAction('Create image')"><i class="fas fa-image"></i> Create image</button>
+                    <button class="button" onclick="buttonAction('Help me write')"><i class="fas fa-pen"></i> Help me write</button>
+                    <button class="button" onclick="buttonAction('Code')"><i class="fas fa-code"></i> Code</button>
+                    <button class="button" onclick="buttonAction('Meaning')"><i class="fa-solid fa-language"></i> Meaning</button>
+                    <button class="button" onclick="buttonAction('Spell Check')"><i class="fa-solid fa-spell-check"></i> Spell Check</button>
+                    <button class="button" onclick="buttonAction('Get advice')"><i class="fas fa-graduation-cap"></i> Get advice</button>
+                    <button class="button" onclick="buttonAction('Summarize text')"><i class="fas fa-file-alt"></i> Summarize text</button>
+                    <button class="button" onclick="buttonAction('Do Math')"><i class="fas fa-calculator"></i> Do Math</button>
+                    <button class="button" onclick="buttonAction('Switch Theme')"><i class="fa-solid fa-circle-half-stroke"></i>Switch Theme</button>
+                </div>
+            `;
+            index = 0;
+            typeWriter();
+            document.getElementById("deleteModal").style.display = "none";
+        }
         function fadeInMainContainer() {
             const mainContainer = document.getElementById('mainContainer');
             mainContainer.style.display = 'flex';
