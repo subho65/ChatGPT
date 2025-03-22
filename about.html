@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.css">
+    <link rel="icon" type="image/png" href="android-chrome-512x512.png" id="favicon">
+    <title>About ChatBHO</title>
+    <style>
+        :root,
+        [data-theme="dark"] {
+            --bg-primary: #141c2f;
+            --bg-secondary: #1e2a44;
+            --accent: #00b7ff;
+            --text-primary: #d9e1e8;
+            --text-secondary: #8a94a6;
+            --shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            --radius: 0.8rem;
+            --separator: #2e3b5a;
+            --error-color: #ff6b6b;
+        }
+
+        [data-theme="light"] {
+            --bg-primary: #f5f7fa;
+            --bg-secondary: #ffffff;
+            --accent: #007bff;
+            --text-primary: #1a2a44;
+            --text-secondary: #6b7280;
+            --shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            --radius: 0.8rem;
+            --separator: #d1d5db;
+            --error-color: #e53e3e;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+            flex: 1;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--accent);
+            border-bottom: 1px solid var(--separator);
+        }
+
+        .info-button,
+        .home-button {
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .info-button:hover,
+        .home-button:hover {
+            color: var(--accent);
+        }
+
+        .content {
+            padding: 2rem 0;
+        }
+
+        .content h1 {
+            font-size: 2rem;
+            color: var(--accent);
+            margin-bottom: 1.5rem;
+        }
+
+        .content h2 {
+            font-size: 1.5rem;
+            color: var(--text-primary);
+            margin: 1.5rem 0 1rem;
+        }
+
+        .content p {
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .content ul {
+            padding-left: 20px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin-bottom: 1rem;
+        }
+
+        .content ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        .content a {
+            color: var(--accent);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .content a:hover {
+            color: #0099d6;
+        }
+
+        /* Modal Styles */
+        #infoModal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+            align-items: center;
+            justify-content: center;
+        }
+
+        [data-theme="dark"] #infoModal {
+            background: rgba(0, 0, 0, 0.9);
+        }
+
+        [data-theme="light"] #infoModal {
+            background: rgba(0, 0, 0, 0.7);
+        }
+
+        .info-modal-content {
+            background: var(--bg-secondary);
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            width: 90%;
+            max-width: 500px;
+            box-shadow: var(--shadow);
+            position: relative;
+            color: var(--text-primary);
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        @media (min-width: 768px) {
+            .info-modal-content {
+                width: 70%;
+                max-width: 800px;
+            }
+        }
+
+        .info-modal-content h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--accent);
+        }
+
+        .info-modal-content h3 {
+            font-size: 1.2rem;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .info-modal-content p {
+            font-size: 1rem;
+            line-height: 1.5;
+            margin-bottom: 1rem;
+        }
+
+        .info-modal-content ul {
+            font-size: 0.9rem;
+            line-height: 1.4;
+            padding-left: 20px;
+            text-align: justify;
+            margin-bottom: 1rem;
+        }
+
+        .info-modal-content ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        .modal-button {
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .modal-button:hover {
+            background: #0099d6;
+        }
+
+        .close-info-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.3s ease, transform 0.2s ease;
+        }
+
+        .close-info-btn:hover {
+            color: var(--accent);
+            transform: scale(1.1);
+        }
+
+        footer {
+            text-align: center;
+            padding: 1rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            border-top: 1px solid var(--separator);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <button class="info-button" onclick="showInfo()"><i class="fas fa-info-circle"></i></button>
+            About ChatBHO
+            <button class="home-button" onclick="window.location.href='index.html'"><i class="fas fa-home"></i></button>
+        </div>
+        <div class="content">
+            <h1>About ChatBHO</h1>
+            <p>ChatBHO is a powerful, browser-based virtual assistant designed to assist users with a variety of tasks,
+                from generating images to solving math problems, writing assistance, and more. Built with simplicity and
+                versatility in mind, it aims to provide an intuitive experience for users of all backgrounds.</p>
+
+            <h2>Purpose</h2>
+            <p>Our goal with ChatBHO is to create a tool that combines creativity, productivity, and learning in one
+                seamless package. Whether you’re a student needing help with homework, a professional drafting content,
+                or someone exploring AI-generated art, ChatBHO is here to support you.</p>
+
+            <h2>Features</h2>
+            <ul>
+                <li><strong>Image Generation</strong>: Create unique visuals with the <code>/imagine</code> command.
+                </li>
+                <li><strong>Multilingual</strong>: Supports over 15 languages, making it accessible globally.</li>
+                <li><strong>Text Tools</strong>: Write, code, spell-check, summarize, or get advice with ease.</li>
+                <li><strong>Math Solver</strong>: Solve equations with LaTeX formatting support.</li>
+                <li><strong>Theme Options</strong>: Choose between dark and light modes, saved via local storage.</li>
+                <li><strong>Persistent History</strong>: Your chat stays intact until you choose to clear it.</li>
+            </ul>
+
+            <h2>How It Works</h2>
+            <p>ChatBHO leverages APIs from Pollinations.ai for text and image generation, combined with a custom
+                front-end built with HTML, CSS, and JavaScript. It stores your chat history and theme preferences in
+                your browser’s local storage, ensuring a personalized experience without server-side dependencies.</p>
+
+            <h2>Credits</h2>
+            <p>ChatBHO was developed as a passion project to explore AI integration in web applications. Special thanks
+                to:</p>
+            <ul>
+                <li><a href="https://pollinations.ai" target="_blank">Pollinations.ai</a> for providing the text and
+                    image
+                    generation APIs.</li>
+                <li><a href="https://fontawesome.com" target="_blank">Font Awesome</a> for the icons.</li>
+                <li><a href="https://katex.org" target="_blank">KaTeX</a> for math rendering.</li>
+            </ul>
+            <p><b>Developed by <a href="https://subhojati.netlify.app" target="_blank">Subhojati Dutta</a></b></p>
+            <p><b>For more info <a href="contact.html">Contact Us</a></b></p>
+
+        </div>
+    </div>
+
+    <!-- Info Modal -->
+    <div id="infoModal" class="modal">
+        <div class="info-modal-content">
+            <span class="close-info-btn" onclick="closeInfoModal()"><i class="fa-solid fa-circle-xmark"></i></span>
+            <h2>Welcome to ChatBHO!</h2>
+            <p>ChatBHO is your versatile virtual assistant designed to assist with a wide range of tasks. Here’s how to
+                get started and make the most of its capabilities:</p>
+            <h3>Key Features</h3>
+            <ul>
+                <li><strong>Image Generation</strong>: Use <code>/imagine</code> followed by a description (e.g.,
+                    "/imagine a futuristic city") to create unique images.</li>
+                <li><strong>Multilingual Support</strong>: ChatBHO understands and responds in multiple languages,
+                    including English, Spanish, French, German, Italian, Portuguese, Dutch, Russian, Chinese (Simplified
+                    and Traditional), Japanese, Korean, Arabic, Hindi, Bengali, and Turkish.</li>
+                <li><strong>Text Assistance</strong>: Get help with writing, coding, spell-checking, summarizing text,
+                    solving math problems, and more using the buttons or direct input.</li>
+                <li><strong>Theme Switching</strong>: Switch between dark and light themes with "Switch theme to dark"
+                    or "Switch theme to light". Your preference is saved!</li>
+                <li><strong>Persistent Chat</strong>: Messages and images are stored in your browser’s local storage, so
+                    your chat history persists across refreshes until you delete it.</li>
+            </ul>
+            <h3>Usage Tips</h3>
+            <ul>
+                <li>Use the buttons in the chat area to quickly start common tasks, or type your questions directly.
+                </li>
+                <li>For math, try LaTeX-style input (e.g., "\((x^2 + 3)\)") for formatted equations.</li>
+                <li>Images can be clicked to view full-size and downloaded via the modal.</li>
+                <li>Clear your chat history using the trash icon in the header—don’t worry, it asks for confirmation!
+                </li>
+            </ul>
+            <h3>Examples</h3>
+            <ul>
+                <li><strong>Image</strong>: "/imagine a serene mountain landscape at sunset"</li>
+                <li><strong>Math</strong>: "Solve \(x^2 - 5x + 6 = 0\)"</li>
+                <li><strong>Writing</strong>: "Help me write a letter to a friend"</li>
+                <li><strong>Code</strong>: "Write a code of a simple calculator in Python"</li>
+                <li><strong>Summary</strong>: "Summary of the last chapter of 'To Kill a Mockingbird'"</li>
+            </ul>
+            <p>Use the text input at the bottom to type your commands or questions. ChatBHO is here to help with almost
+                anything—give it a try!</p>
+
+            <div class="modal-buttons">
+                <button class="modal-button" onclick="closeInfoModal()">Got it!</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        &copy; 2025 ChatBHO. All rights reserved.
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.js"></script>
+    <script>
+        console.log("About page script loaded successfully");
+
+        // Load theme from localStorage
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme) {
+                document.documentElement.setAttribute('data-theme', savedTheme);
+            } else {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            }
+        }
+
+        // Modal functions
+        function showInfo() {
+            document.getElementById("infoModal").style.display = "flex";
+        }
+
+        function closeInfoModal() {
+            document.getElementById("infoModal").style.display = "none";
+        }
+
+        window.onload = function () {
+            console.log("Window loaded, loading theme");
+            loadTheme();
+        };
+    </script>
+</body>
+
+</html>
