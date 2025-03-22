@@ -18,7 +18,6 @@
             --text-secondary: #8a94a6;
             --user-bubble: #0066cc;
             --assistant-bubble: #2a3555;
-            /* Fixed typo from --assistant-bV */
             --shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
             --radius: 0.8rem;
             --input-border: #3a4666;
@@ -84,11 +83,8 @@
             border-bottom: 1px solid var(--separator);
         }
 
-        .info-button,
-        .delete-button {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
+        .menu-button,
+        .new-chat-button {
             background: none;
             border: none;
             color: var(--text-secondary);
@@ -97,18 +93,26 @@
             transition: color 0.3s ease, transform 0.2s ease;
         }
 
-        .info-button:hover,
-        .delete-button:hover {
+        .menu-button:hover,
+        .new-chat-button:hover {
             color: var(--accent);
-            transform: translateY(-50%) scale(1.1);
+
         }
 
-        .info-button {
+        .menu-button {
+            position: absolute;
+            top: 50%;
             left: 1rem;
+            transform: translateY(-50%);
         }
 
-        .delete-button {
+        .header-buttons {
+            display: flex;
+            gap: 0.5rem;
+            position: absolute;
             right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
         }
 
         .chat-area {
@@ -299,18 +303,15 @@
             width: 100%;
             height: 100%;
             background: rgba(0, 0, 0, 0.7);
-            /* Default fallback */
             backdrop-filter: blur(8px);
             align-items: center;
             justify-content: center;
         }
 
-        /* Dark theme */
         [data-theme="dark"] .modal {
             background: rgba(0, 0, 0, 0.9);
         }
 
-        /* Light theme */
         [data-theme="light"] .modal {
             background: rgba(0, 0, 0, 0.7);
         }
@@ -339,6 +340,8 @@
             font-size: clamp(1.2rem, 3vw, 1.5rem);
             cursor: pointer;
             transition: color 0.3s ease, transform 0.2s ease;
+            background: none;
+            border: none;
         }
 
         .close-btn:hover,
@@ -455,7 +458,6 @@
             .chat-area {
                 padding: 1rem;
                 padding-bottom: 70px;
-                /* Space for fixed input bar */
             }
 
             .input-container {
@@ -474,7 +476,6 @@
             .container {
                 max-width: 1000px;
             }
-
         }
 
         img.generated-image {
@@ -483,7 +484,6 @@
             margin-top: 15px;
         }
 
-        /* Existing Modal Styles (keep these) */
         #infoModal,
         #deleteModal {
             display: none;
@@ -509,38 +509,29 @@
             background: rgba(0, 0, 0, 0.7);
         }
 
-        /* Updated Info Modal Content Styles */
         .info-modal-content,
         .delete-modal-content {
             background: var(--bg-secondary);
             padding: 1.5rem;
             border-radius: var(--radius);
             width: 90%;
-            /* Default for smaller screens */
             max-width: 500px;
-            /* Default max-width for mobile */
             box-shadow: var(--shadow);
             position: relative;
             color: var(--text-primary);
             max-height: 80vh;
-            /* Limit height to 80% of viewport height */
             overflow-y: auto;
-            /* Enable vertical scrolling */
         }
 
-        /* Media Query for Laptops (wider modal) */
         @media (min-width: 768px) {
 
             .info-modal-content,
             .delete-modal-content {
                 width: 70%;
-                /* Wider on larger screens */
                 max-width: 800px;
-                /* Increased max-width for laptops */
             }
         }
 
-        /* Rest of your modal styles remain unchanged */
         .info-modal-content h2,
         .delete-modal-content h2 {
             font-size: 1.5rem;
@@ -611,6 +602,7 @@
             font-size: 1.5rem;
             cursor: pointer;
             transition: color 0.3s ease, transform 0.2s ease;
+
         }
 
         .close-info-btn:hover,
@@ -621,95 +613,162 @@
 
         .header-logo {
             width: auto;
-            /* Adjust size as needed */
             height: 40px;
             margin-right: 0.5rem;
-            /* Space between logo and text */
-            border-radius: none;
-            /* Optional: makes it circular */
             vertical-align: middle;
-            /* Aligns with text */
         }
 
         [data-theme="dark"] .header-logo {
-    content: url("dark.png"); /* Light logo for dark mode */
-}
+            content: url("dark.png");
+        }
 
-/* Light mode logo */
-[data-theme="light"] .header-logo {
-    content: url("light.png"); /* Dark logo for light mode */
-}
+        [data-theme="light"] .header-logo {
+            content: url("light.png");
+        }
 
+        .menu-panel {
+            display: none;
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 300px;
+            height: 100%;
+            background: var(--bg-secondary);
+            box-shadow: var(--shadow);
+            z-index: 1000;
+            padding: 1rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .menu-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .history-item {
+            padding: 0.8rem;
+            margin: 0.5rem 0;
+            background: var(--assistant-bubble);
+            border-radius: var(--radius);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .history-item:hover {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        .history-item .delete-chat {
+            color: var(--error-color);
+            cursor: pointer;
+        }
+
+        .history-item .delete-chat:hover {
+            transform: scale(1.1);
+        }
+
+        .menu-footer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 1rem;
+            border-top: 1px solid var(--separator);
+            background: var(--bg-secondary);
+            /* Ensures it blends with the panel */
+        }
+
+        .info-menu-button {
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 1rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            width: 100%;
+            text-align: left;
+            transition: color 0.3s ease;
+        }
+
+        .info-menu-button:hover {
+            color: var(--accent);
+        }
     </style>
 </head>
 
 <body>
     <div class="container">
         <div class="header">
-            <button class="info-button" onclick="showInfo()"><i class="fas fa-info-circle"></i></button>
+            <button class="menu-button" id="menuButton"><i class="fas fa-bars"></i></button>
             <img src="dark.png" alt="ChatBHO Logo" class="header-logo">
             ChatBHO
-            <button class="delete-button" onclick="confirmDeletion()"><i class="fas fa-trash-alt"></i></button>
+            <div class="header-buttons">
+                <button class="new-chat-button" id="newChatButton"><i class="fas fa-plus"></i></button>
+            </div>
         </div>
         <div class="chat-area" id="messages">
             <div class="help" id="helpText"></div>
             <div class="main-container" id="mainContainer">
-                <button class="button" onclick="buttonAction('Create image')"><i class="fas fa-image"></i> Create
-                    image</button>
-                <button class="button" onclick="buttonAction('Help me write')"><i class="fas fa-pen"></i> Help me
-                    write</button>
-                <button class="button" onclick="buttonAction('Code')"><i class="fas fa-code"></i> Code</button>
-                <button class="button" onclick="buttonAction('Meaning')"><i class="fa-solid fa-language"></i>
-                    Meaning</button>
-                <button class="button" onclick="buttonAction('Spell Check')"><i class="fa-solid fa-spell-check"></i>
-                    Spell Check</button>
-                <button class="button" onclick="buttonAction('Get advice')"><i class="fas fa-graduation-cap"></i> Get
-                    advice</button>
-                <button class="button" onclick="buttonAction('Summarize text')"><i class="fas fa-file-alt"></i>
-                    Summarize text</button>
-                <button class="button" onclick="buttonAction('Do Math')"><i class="fas fa-calculator"></i> Do
-                    Math</button>
-                <button class="button" onclick="buttonAction('Switch Theme')"><i
-                        class="fa-solid fa-circle-half-stroke"></i>Switch Theme</button>
+                <button class="button" id="createImageBtn"><i class="fas fa-image"></i> Create image</button>
+                <button class="button" id="helpWriteBtn"><i class="fas fa-pen"></i> Help me write</button>
+                <button class="button" id="codeBtn"><i class="fas fa-code"></i> Code</button>
+                <button class="button" id="meaningBtn"><i class="fa-solid fa-language"></i> Meaning</button>
+                <button class="button" id="spellCheckBtn"><i class="fa-solid fa-spell-check"></i> Spell Check</button>
+                <button class="button" id="adviceBtn"><i class="fas fa-graduation-cap"></i> Get advice</button>
+                <button class="button" id="summarizeBtn"><i class="fas fa-file-alt"></i> Summarize text</button>
+                <button class="button" id="mathBtn"><i class="fas fa-calculator"></i> Do Math</button>
+                <button class="button" id="themeBtn"><i class="fa-solid fa-circle-half-stroke"></i>Switch Theme</button>
             </div>
         </div>
         <div class="input-container">
             <input type="text" id="inputField" placeholder="Message ChatBHO">
-            <button id="sendButton" onclick="handleUserMessage()"><i class="fas fa-arrow-up"></i></button>
+            <button id="sendButton"><i class="fas fa-arrow-up"></i></button>
         </div>
     </div>
+
+    <div class="menu-panel" id="menuPanel">
+        <div class="menu-header">
+            <h3>Chat History</h3>
+            <button class="close-btn" id="closeMenuBtn"><i class="fa-solid fa-circle-xmark"></i></button>
+        </div>
+        <div id="historyList"></div>
+        <div class="menu-footer">
+            <button class="info-menu-button" id="menuInfoButton"><i class="fas fa-info-circle"></i> Info</button>
+        </div>
+    </div>
+
     <div id="imageModal" class="modal">
         <div class="modal-content">
-            <span class="close-btn" onclick="closeModal()"><i class="fa-solid fa-circle-xmark"></i></span>
-            <span id="downloadLink" class="download-btn" onclick="downloadImage()"><i
-                    class="fas fa-download"></i></span>
+            <span class="close-btn" id="closeImageModal"><i class="fa-solid fa-circle-xmark"></i></span>
+            <span id="downloadLink" class="download-btn"><i class="fas fa-download"></i></span>
             <img id="modalImage" alt="Generated image">
         </div>
     </div>
 
-    <!-- New Info Modal -->
-    <!-- New Info Modal with Expanded Content -->
     <div id="infoModal" class="modal">
         <div class="info-modal-content">
-            <span class="close-info-btn" onclick="closeInfoModal()"><i class="fa-solid fa-circle-xmark"></i></span>
+            <span class="close-info-btn" id="closeInfoModalBtn"><i class="fa-solid fa-circle-xmark"></i></span>
             <h2>Welcome to ChatBHO!</h2>
             <p>ChatBHO is your versatile virtual assistant designed to assist with a wide range of tasks. Here’s how to
-                get
-                started and make the most of its capabilities:</p>
+                get started and make the most of its capabilities:</p>
             <h3>Key Features</h3>
             <ul>
                 <li><strong>Image Generation</strong>: Use <code>/imagine</code> followed by a description (e.g.,
-                    "/imagine
-                    a futuristic city") to create unique images.</li>
+                    "/imagine a futuristic city") to create unique images.</li>
                 <li><strong>Multilingual Support</strong>: ChatBHO understands and responds in multiple languages,
-                    including
-                    English, Spanish, French, German, Italian, Portuguese, Dutch, Russian, Chinese (Simplified and
-                    Traditional), Japanese, Korean, Arabic, Hindi, Bengali, and Turkish.</li>
+                    including English, Spanish, French, German, Italian, Portuguese, Dutch, Russian, Chinese (Simplified
+                    and Traditional), Japanese, Korean, Arabic, Hindi, Bengali, and Turkish.</li>
                 <li><strong>Text Assistance</strong>: Get help with writing, coding, spell-checking, summarizing text,
                     solving math problems, and more using the buttons or direct input.</li>
                 <li><strong>Theme Switching</strong>: Switch between dark and light themes with "Switch theme to dark"
-                    or
-                    "Switch theme to light". Your preference is saved!</li>
+                    or "Switch theme to light". Your preference is saved!</li>
                 <li><strong>Persistent Chat</strong>: Messages and images are stored in your browser’s local storage, so
                     your chat history persists across refreshes until you delete it.</li>
             </ul>
@@ -734,19 +793,19 @@
                 anything—give it a try!</p>
             <p><b>N.B. - ChatGPT can make mistakes. <a href="about.html">Check important info.</a></b></p>
             <div class="modal-buttons">
-                <button class="modal-button" onclick="closeInfoModal()">Got it!</button>
+                <button class="modal-button" id="infoGotItBtn">Got it!</button>
             </div>
         </div>
     </div>
-    <!-- New Delete Confirmation Modal -->
-    <div id="deleteModal" class="modal">
+
+    <div id="deleteChatModal" class="modal">
         <div class="delete-modal-content">
-            <span class="close-delete-btn" onclick="closeDeleteModal()"><i class="fa-solid fa-circle-xmark"></i></span>
-            <h2>Are you sure?</h2>
-            <p>You won't be able to revert this action!</p>
+            <span class="close-delete-btn" id="closeDeleteChatModalBtn"><i class="fa-solid fa-circle-xmark"></i></span>
+            <h2>Delete Chat?</h2>
+            <p>Are you sure you want to delete this chat? This action cannot be undone.</p>
             <div class="modal-buttons">
-                <button class="modal-button cancel" onclick="closeDeleteModal()">No, cancel!</button>
-                <button class="modal-button" onclick="deleteMessages()">Yes, delete it!</button>
+                <button class="modal-button cancel" id="cancelDeleteChatBtn">Cancel</button>
+                <button class="modal-button" id="confirmDeleteChatBtn">Delete</button>
             </div>
         </div>
     </div>
@@ -754,357 +813,512 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.js"></script>
     <script>
-        // Button actions
-        function buttonAction(action) {
-            const inputArea = document.getElementById("inputField");
-            if (action === 'Create image') { inputArea.value = '/imagine '; }
-            if (action === 'Help me write') { inputArea.value = action; }
-            if (action === 'Code') { inputArea.value = 'Write a code of '; }
-            if (action === 'Meaning') { inputArea.value = 'Meaning of '; }
-            if (action === 'Spell Check') { inputArea.value = 'Check the spelling of '; }
-            if (action === 'Get advice') { inputArea.value = 'Give advice about '; }
-            if (action === 'Summarize text') { inputArea.value = 'Summary of'; }
-            if (action === 'Do Math') { inputArea.value = 'Solve A,B from equations A+B=3 and A-B =1 '; }
-            if (action === 'Switch Theme') { inputArea.value = 'Switch theme to '; }
-        }
+        document.addEventListener('DOMContentLoaded', function () {
 
-        let currentImageUrl = ''; // Global variable for download
+            let currentChatId = null;
+            let chats = JSON.parse(localStorage.getItem('chats')) || {};
+            let chatIdToDelete = null;
+            const menuPanel = document.getElementById('menuPanel');
+            if (menuPanel) menuPanel.style.display = 'none';
+            const deleteChatModal = document.getElementById('deleteChatModal');
+            const closeDeleteChatModalBtn = document.getElementById('closeDeleteChatModalBtn');
+            const cancelDeleteChatBtn = document.getElementById('cancelDeleteChatBtn');
+            const confirmDeleteChatBtn = document.getElementById('confirmDeleteChatBtn');
+            const inputField = document.getElementById('inputField');
+            const messages = document.getElementById('messages');
+            const sendButton = document.getElementById('sendButton');
+            const menuButton = document.getElementById('menuButton');
+            const newChatButton = document.getElementById('newChatButton');
+            const closeMenuBtn = document.getElementById('closeMenuBtn');
+            const menuInfoButton = document.getElementById('menuInfoButton');
+            const closeImageModal = document.getElementById('closeImageModal');
+            const downloadLink = document.getElementById('downloadLink');
+            const closeInfoModalBtn = document.getElementById('closeInfoModalBtn');
+            const infoGotItBtn = document.getElementById('infoGotItBtn');
+            const closeDeleteModalBtn = document.getElementById('closeDeleteModalBtn');
+            const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
+            const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
 
-        function openModal(imageUrl) {
-            const modal = document.getElementById("imageModal");
-            const modalImage = document.getElementById("modalImage");
-            modal.style.display = "flex";
-            modalImage.src = imageUrl;
-            currentImageUrl = imageUrl;
-        }
+            // Main container buttons
+            const createImageBtn = document.getElementById('createImageBtn');
+            const helpWriteBtn = document.getElementById('helpWriteBtn');
+            const codeBtn = document.getElementById('codeBtn');
+            const meaningBtn = document.getElementById('meaningBtn');
+            const spellCheckBtn = document.getElementById('spellCheckBtn');
+            const adviceBtn = document.getElementById('adviceBtn');
+            const summarizeBtn = document.getElementById('summarizeBtn');
+            const mathBtn = document.getElementById('mathBtn');
+            const themeBtn = document.getElementById('themeBtn');
 
-        function closeModal() {
-            document.getElementById("imageModal").style.display = "none";
-        }
+            function buttonAction(action) {
+                if (inputField) {
+                    if (action === 'Create image') inputField.value = '/imagine ';
+                    if (action === 'Help me write') inputField.value = action;
+                    if (action === 'Code') inputField.value = 'Write a code of ';
+                    if (action === 'Meaning') inputField.value = 'Meaning of ';
+                    if (action === 'Spell Check') inputField.value = 'Check the spelling of ';
+                    if (action === 'Get advice') inputField.value = 'Give advice about ';
+                    if (action === 'Summarize text') inputField.value = 'Summary of';
+                    if (action === 'Do Math') inputField.value = 'Solve A,B from equations A+B=3 and A-B =1 ';
+                    if (action === 'Switch Theme') inputField.value = 'Switch theme to ';
+                }
+            }
 
-        function downloadImage() {
-            const modalImage = document.getElementById("modalImage");
-            const filename = modalImage.alt ? `${modalImage.alt.replace(/\s+/g, '_')}.png` : 'generated-image.png';
-            fetch(currentImageUrl)
-                .then(response => response.blob())
-                .then(blob => {
-                    const url = window.URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.style.display = 'none';
-                    a.href = url;
-                    a.download = filename;
-                    document.body.appendChild(a);
-                    a.click();
-                    window.URL.revokeObjectURL(url);
-                    document.body.removeChild(a);
-                })
-                .catch(error => {
-                    console.error('Error downloading image:', error);
-                    alert('Failed to download the image. Please try again.');
+            function openModal(imageUrl) {
+                const modal = document.getElementById("imageModal");
+                const modalImage = document.getElementById("modalImage");
+                if (modal && modalImage) {
+                    modal.style.display = "flex";
+                    modalImage.src = imageUrl;
+                }
+            }
+
+            function closeModal() {
+                const modal = document.getElementById("imageModal");
+                if (modal) modal.style.display = "none";
+            }
+
+            function downloadImage() {
+                const modalImage = document.getElementById("modalImage");
+                if (modalImage) {
+                    const filename = modalImage.alt ? `${modalImage.alt.replace(/\s+/g, '_')}.png` : 'generated-image.png';
+                    fetch(modalImage.src)
+                        .then(response => response.blob())
+                        .then(blob => {
+                            const url = window.URL.createObjectURL(blob);
+                            const a = document.createElement('a');
+                            a.style.display = 'none';
+                            a.href = url;
+                            a.download = filename;
+                            document.body.appendChild(a);
+                            a.click();
+                            window.URL.revokeObjectURL(url);
+                            document.body.removeChild(a);
+                        })
+                        .catch(error => console.error('Error downloading image:', error));
+                }
+            }
+
+            function escapeHTML(str) {
+                return str.replace(/[&<>"']/g, function (char) {
+                    switch (char) {
+                        case '&': return '&';
+                        case '<': return '<';
+                        case '>': return '>';
+                        case '"': return '"';
+                        case "'": return "'";
+                        default: return char;
+                    }
                 });
-        }
+            }
 
-        const inputField = document.getElementById('inputField');
-        const messages = document.getElementById('messages');
-        const sendButton = document.getElementById('sendButton');
+            function parseMarkdown(text) {
+                text = escapeHTML(text);
+                text = text.replace(/^######\s+(.*)$/gm, '<h6>$1</h6>');
+                text = text.replace(/^#####\s+(.*)$/gm, '<h5>$1</h5>');
+                text = text.replace(/^####\s+(.*)$/gm, '<h4>$1</h4>');
+                text = text.replace(/^###\s+(.*)$/gm, '<h3>$1</h3>');
+                text = text.replace(/^##\s+(.*)$/gm, '<h2>$1</h2>');
+                text = text.replace(/^#\s+(.*)$/gm, '<h1>$1</h1>');
+                text = text.replace(/---/g, '<div class="separator"></div>');
+                text = text.replace(/\*\*\*(.*?)\*\*\*/g, '<strong><em>$1</em></strong>');
+                text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                text = text.replace(/_(.*?)_/g, '<em>$1</em>');
+                text = text.replace(/`([^`]+)`/g, '<code>$1</code>');
+                text = text.replace(/```([\s\S]+?)```/g, '<pre><code>$1</code></pre>');
+                text = text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
+                text = text.replace(/(?:^|\n)[*-]\s?(.*)/g, function (match, p1) {
+                    return `<ul><li>${p1}</li></ul>`;
+                });
+                text = text.replace(/<\/ul>\s*<ul>/g, '');
+                text = text.replace(/(?:^|\n)(\d+)\.\s?(.*)/g, function (match, p1, p2) {
+                    return `<ol><li>${p2}</li></ol>`;
+                });
+                text = text.replace(/<\/ol>\s*<ol>/g, '');
+                text = text.replace(/\n/g, '<br>');
+                text = text.replace(/\\\((.*?)\\\)/g, (match, expr) => {
+                    try {
+                        const cleanedExpr = expr.replace(/[VN]/g, '').replace(/<br\s*\/?>/gi, '').trim();
+                        return katex.renderToString(cleanedExpr, { throwOnError: false, displayMode: false, output: 'html' });
+                    } catch (error) {
+                        return `<span class="math-error">${escapeHTML(expr)}</span>`;
+                    }
+                });
+                text = text.replace(/\\\[(.+?)\\\]/g, (match, expr) => {
+                    try {
+                        const cleanedExpr = expr.replace(/[VN]/g, '').replace(/<br\s*\/?>/gi, '').trim();
+                        return `<div class="katex-display">${katex.renderToString(cleanedExpr, { throwOnError: false, displayMode: true, output: 'html' })}</div>`;
+                    } catch (error) {
+                        return `<div class="math-error">${escapeHTML(expr)}</div>`;
+                    }
+                });
+                text = text.replace(/\\\(|\\\)|\\\[|\\\]/g, '');
+                return text;
+            }
 
-        // Add Enter key listener
-        inputField.addEventListener('keydown', function (event) {
-            if (event.key === 'Enter') {
-                event.preventDefault();
-                handleUserMessage();
+            function loadMessages() {
+                const savedTheme = localStorage.getItem('theme');
+
+                if (savedTheme) {
+                    document.documentElement.setAttribute('data-theme', savedTheme);
+                } else {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                }
+
+                updateHistoryList();
+                showMainPage();
+            }
+
+            function showMainPage() {
+                if (messages) {
+                    messages.innerHTML = `
+                        <div class="help" id="helpText"></div>
+                        <div class="main-container" id="mainContainer">
+                            <button class="button" id="createImageBtn"><i class="fas fa-image"></i> Create image</button>
+                            <button class="button" id="helpWriteBtn"><i class="fas fa-pen"></i> Help me write</button>
+                            <button class="button" id="codeBtn"><i class="fas fa-code"></i> Code</button>
+                            <button class="button" id="meaningBtn"><i class="fa-solid fa-language"></i> Meaning</button>
+                            <button class="button" id="spellCheckBtn"><i class="fa-solid fa-spell-check"></i> Spell Check</button>
+                            <button class="button" id="adviceBtn"><i class="fas fa-graduation-cap"></i> Get advice</button>
+                            <button class="button" id="summarizeBtn"><i class="fas fa-file-alt"></i> Summarize text</button>
+                            <button class="button" id="mathBtn"><i class="fas fa-calculator"></i> Do Math</button>
+                            <button class="button" id="themeBtn"><i class="fa-solid fa-circle-half-stroke"></i>Switch Theme</button>
+                        </div>
+                    `;
+                    index = 0;
+                    typeWriter();
+                    addMainContainerListeners();
+                }
+                currentChatId = null;
+            }
+
+            function saveToLocalStorage(type, content, sender = null, url = null, alt = null) {
+                if (!currentChatId) return;
+                if (!chats[currentChatId]) {
+                    chats[currentChatId] = { messages: [], title: `Chat ${Object.keys(chats).length}` };
+                }
+                const chat = chats[currentChatId];
+                if (type === 'text') {
+                    chat.messages.push({ type: 'text', content, sender });
+                    if (sender === 'user' && chat.messages.length === 1) {
+                        chat.title = content.substring(0, 30) + (content.length > 30 ? '...' : '');
+                    }
+                } else if (type === 'image') {
+                    chat.messages.push({ type: 'image', url, alt });
+                }
+                localStorage.setItem('chats', JSON.stringify(chats));
+                updateHistoryList();
+            }
+
+            function handleUserMessage() {
+                if (!inputField || !messages) return;
+                const userMessage = inputField.value.trim();
+                if (userMessage === "") return;
+
+                if (!currentChatId) {
+                    currentChatId = createNewChat();
+                }
+
+                displayMessage(userMessage, 'user');
+                saveToLocalStorage('text', userMessage, 'user');
+                inputField.value = '';
+                const helpText = document.getElementById('helpText');
+                const mainContainer = document.getElementById('mainContainer');
+                if (helpText) helpText.style.display = "none";
+                if (mainContainer) mainContainer.style.display = "none";
+
+                const lowerMessage = userMessage.toLowerCase();
+                if (lowerMessage === "switch theme to dark") {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                    localStorage.setItem('theme', 'dark');
+                    displayMessage("Switched to dark theme!", 'assistant');
+                    saveToLocalStorage('text', "Switched to dark theme!", 'assistant');
+                } else if (lowerMessage === "switch theme to light") {
+                    document.documentElement.setAttribute('data-theme', 'light');
+                    localStorage.setItem('theme', 'light');
+                    displayMessage("Switched to light theme!", 'assistant');
+                    saveToLocalStorage('text', "Switched to light theme!", 'assistant');
+                } else {
+                    fetchAssistantResponse(userMessage);
+                }
+            }
+
+            function displayMessage(text, sender) {
+                if (!messages) return;
+                const messageDiv = document.createElement('div');
+                messageDiv.className = sender === 'user' ? 'user-message' : 'assistant-message';
+                messageDiv.innerHTML = parseMarkdown(text);
+                messages.appendChild(messageDiv);
+                messages.scrollTop = messages.scrollHeight;
+            }
+
+            async function fetchAssistantResponse(userMessage) {
+                if (!messages) return;
+                const typingDiv = document.createElement('div');
+                typingDiv.className = 'assistant-message';
+                typingDiv.innerHTML = '<span class="typing">Assistant is typing</span>';
+                messages.appendChild(typingDiv);
+                messages.scrollTop = messages.scrollHeight;
+
+                if (userMessage.startsWith("/imagine")) {
+                    const prompt = userMessage.replace("/imagine", "").trim();
+                    if (prompt) {
+                        try {
+                            typingDiv.innerHTML = '<span class="typing">Please wait while generating your image</span>';
+                            const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}/?nologo=1&width=1920&height=1920`;
+                            const image = document.createElement('img');
+                            image.src = imageUrl;
+                            image.alt = prompt;
+                            image.className = "generated-image";
+                            image.onclick = function () { openModal(imageUrl); };
+                            image.onload = function () {
+                                typingDiv.remove();
+                                messages.appendChild(image);
+                                saveToLocalStorage('image', null, null, imageUrl, prompt);
+                                messages.scrollTop = messages.scrollHeight;
+                            };
+                        } catch (error) {
+                            typingDiv.innerHTML = "<span class='typing'>Error: Couldn't connect to the image server.</span>";
+                            saveToLocalStorage('text', "Error: Couldn't connect to the image server.", 'assistant');
+                        }
+                    } else {
+                        typingDiv.innerHTML = "<span class='typing'>Please provide a prompt after /imagine.</span>";
+                        saveToLocalStorage('text', "Please provide a prompt after /imagine.", 'assistant');
+                    }
+                } else {
+                    const apiUrl = 'https://text.pollinations.ai/openai';
+                    const requestBody = {
+                        model: 'openai-gpt-3',
+                        messages: [{ role: 'user', content: userMessage }]
+                    };
+                    try {
+                        const response = await fetch(apiUrl, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(requestBody)
+                        });
+                        if (response.ok) {
+                            const data = await response.json();
+                            const assistantMessage = data.choices[0].message.content;
+                            typingDiv.remove();
+                            displayMessage(assistantMessage, 'assistant');
+                            saveToLocalStorage('text', assistantMessage, 'assistant');
+                        } else {
+                            typingDiv.innerHTML = "<span class='typing'>Sorry, I couldn't process your request.</span>";
+                            saveToLocalStorage('text', "Sorry, I couldn't process your request.", 'assistant');
+                        }
+                    } catch (error) {
+                        typingDiv.innerHTML = "<span class='typing'>Error: Couldn't connect to the server.</span>";
+                        saveToLocalStorage('text', "Error: Couldn't connect to the server.", 'assistant');
+                    }
+                }
+            }
+
+            const text = "What can I help with?";
+            const speed = 50;
+            let index = 0;
+
+            function typeWriter() {
+                const helpText = document.getElementById("helpText");
+                if (helpText && index < text.length) {
+                    helpText.innerHTML += text.charAt(index);
+                    index++;
+                    setTimeout(typeWriter, speed);
+                }
+            }
+
+            function showInfo() {
+                const infoModal = document.getElementById("infoModal");
+                if (infoModal) infoModal.style.display = "flex";
+            }
+
+            function closeInfoModal() {
+                const infoModal = document.getElementById("infoModal");
+                if (infoModal) infoModal.style.display = "none";
+            }
+
+            function confirmDeletion() {
+                const deleteModal = document.getElementById("deleteModal");
+                if (deleteModal) deleteModal.style.display = "flex";
+            }
+
+            function closeDeleteModal() {
+                const deleteModal = document.getElementById("deleteModal");
+                if (deleteModal) deleteModal.style.display = "none";
+                if (messages) {
+                    const tempMessage = document.createElement('div');
+                    tempMessage.className = 'assistant-message';
+                    tempMessage.innerHTML = parseMarkdown("Cancelled: Your messages are safe.");
+                    messages.appendChild(tempMessage);
+                    messages.scrollTop = messages.scrollHeight;
+                    setTimeout(() => tempMessage.remove(), 2000);
+                }
+            }
+
+            function deleteMessages() {
+                if (currentChatId && chats[currentChatId]) {
+                    delete chats[currentChatId];
+                    localStorage.setItem('chats', JSON.stringify(chats));
+                    updateHistoryList();
+                    showMainPage();
+                }
+                const deleteModal = document.getElementById("deleteModal");
+                if (deleteModal) deleteModal.style.display = "none";
+            }
+
+            function createNewChat() {
+                const chatId = `chat_${Date.now()}`;
+                chats[chatId] = {
+                    messages: [],
+                    title: `Chat ${Object.keys(chats).length + 1}`
+                };
+                currentChatId = chatId;
+                localStorage.setItem('chats', JSON.stringify(chats));
+                updateHistoryList();
+                showMainPage();
+                return chatId;
+            }
+
+            function loadChat(chatId) {
+                currentChatId = chatId;
+                if (messages && chats[chatId]) {
+                    messages.innerHTML = '';
+                    const chat = chats[chatId];
+                    chat.messages.forEach(item => {
+                        if (item.type === 'text') {
+                            displayMessage(item.content, item.sender);
+                        } else if (item.type === 'image') {
+                            const image = document.createElement('img');
+                            image.src = item.url;
+                            image.alt = item.alt;
+                            image.className = "generated-image";
+                            image.onclick = function () { openModal(item.url); };
+                            messages.appendChild(image);
+                        }
+                    });
+                    messages.scrollTop = messages.scrollHeight;
+                }
+                toggleMenu();
+            }
+
+            function toggleMenu() {
+                const menuPanel = document.getElementById('menuPanel');
+                if (menuPanel) {
+                    menuPanel.style.display = menuPanel.style.display === 'block' ? 'none' : 'block';
+                }
+            }
+
+            function updateHistoryList() {
+                const historyList = document.getElementById('historyList');
+                if (historyList) {
+                    historyList.innerHTML = '';
+                    Object.entries(chats).forEach(([chatId, chat]) => {
+                        const div = document.createElement('div');
+                        div.className = 'history-item';
+
+                        const titleSpan = document.createElement('span');
+                        titleSpan.textContent = chat.title;
+                        titleSpan.className = 'history-title';
+
+                        const deleteSpan = document.createElement('span');
+                        deleteSpan.className = 'delete-chat';
+                        deleteSpan.innerHTML = '<i class="fas fa-trash"></i>';
+
+                        div.appendChild(titleSpan);
+                        div.appendChild(deleteSpan);
+
+                        div.addEventListener('click', (event) => {
+                            if (event.target !== deleteSpan && !deleteSpan.contains(event.target)) {
+                                loadChat(chatId);
+                            }
+                        });
+                        deleteSpan.addEventListener('click', (event) => {
+                            event.stopPropagation();
+                            chatIdToDelete = chatId; // Store the chat ID to delete
+                            if (deleteChatModal) deleteChatModal.style.display = 'flex'; // Show the modal
+                        });
+
+                        historyList.appendChild(div);
+                    });
+                }
+            }
+            function deleteChat(chatId) {
+                if (chats[chatId]) {
+                    delete chats[chatId];
+                    localStorage.setItem('chats', JSON.stringify(chats));
+                    updateHistoryList();
+                    if (currentChatId === chatId) {
+                        showMainPage();
+                    }
+                }
+            }
+
+            function addMainContainerListeners() {
+                const createImageBtn = document.getElementById('createImageBtn');
+                const helpWriteBtn = document.getElementById('helpWriteBtn');
+                const codeBtn = document.getElementById('codeBtn');
+                const meaningBtn = document.getElementById('meaningBtn');
+                const spellCheckBtn = document.getElementById('spellCheckBtn');
+                const adviceBtn = document.getElementById('adviceBtn');
+                const summarizeBtn = document.getElementById('summarizeBtn');
+                const mathBtn = document.getElementById('mathBtn');
+                const themeBtn = document.getElementById('themeBtn');
+
+                if (createImageBtn) createImageBtn.addEventListener('click', () => buttonAction('Create image'));
+                if (helpWriteBtn) helpWriteBtn.addEventListener('click', () => buttonAction('Help me write'));
+                if (codeBtn) codeBtn.addEventListener('click', () => buttonAction('Code'));
+                if (meaningBtn) meaningBtn.addEventListener('click', () => buttonAction('Meaning'));
+                if (spellCheckBtn) spellCheckBtn.addEventListener('click', () => buttonAction('Spell Check'));
+                if (adviceBtn) adviceBtn.addEventListener('click', () => buttonAction('Get advice'));
+                if (summarizeBtn) summarizeBtn.addEventListener('click', () => buttonAction('Summarize text'));
+                if (mathBtn) mathBtn.addEventListener('click', () => buttonAction('Do Math'));
+                if (themeBtn) themeBtn.addEventListener('click', () => buttonAction('Switch Theme'));
+            }
+
+            // Add event listeners
+            if (sendButton) sendButton.addEventListener('click', handleUserMessage);
+            if (inputField) inputField.addEventListener('keydown', function (event) {
+                if (event.key === 'Enter') {
+                    event.preventDefault();
+                    handleUserMessage();
+                }
+            });
+            if (menuButton) menuButton.addEventListener('click', toggleMenu);
+            if (newChatButton) newChatButton.addEventListener('click', createNewChat);
+            if (closeMenuBtn) closeMenuBtn.addEventListener('click', toggleMenu);
+            if (menuInfoButton) menuInfoButton.addEventListener('click', () => { showInfo(); toggleMenu(); });
+            if (closeImageModal) closeImageModal.addEventListener('click', closeModal);
+            if (downloadLink) downloadLink.addEventListener('click', downloadImage);
+            if (closeInfoModalBtn) closeInfoModalBtn.addEventListener('click', closeInfoModal);
+            if (infoGotItBtn) infoGotItBtn.addEventListener('click', closeInfoModal);
+            if (closeDeleteModalBtn) closeDeleteModalBtn.addEventListener('click', closeDeleteModal);
+            if (cancelDeleteBtn) cancelDeleteBtn.addEventListener('click', closeDeleteModal);
+            if (confirmDeleteBtn) confirmDeleteBtn.addEventListener('click', deleteMessages);
+
+            // Initial load
+            loadMessages();
+             if (closeDeleteChatModalBtn) {
+                closeDeleteChatModalBtn.addEventListener('click', () => {
+                    if (deleteChatModal) deleteChatModal.style.display = 'none';
+                });
+            }
+            if (cancelDeleteChatBtn) {
+                cancelDeleteChatBtn.addEventListener('click', () => {
+                    if (deleteChatModal) deleteChatModal.style.display = 'none';
+                });
+            }
+            if (confirmDeleteChatBtn) {
+                confirmDeleteChatBtn.addEventListener('click', () => {
+                    if (chatIdToDelete) {
+                        deleteChat(chatIdToDelete);
+                        chatIdToDelete = null; // Reset after deletion
+                    }
+                    if (deleteChatModal) deleteChatModal.style.display = 'none';
+                });
             }
         });
 
-        function escapeHTML(str) {
-            return str.replace(/[&<>"']/g, function (char) {
-                switch (char) {
-                    case '&': return '&amp;';
-                    case '<': return '&lt;';
-                    case '>': return '&gt;';
-                    case '"': return '&quot;';
-                    case "'": return '&#39;';
-                    default: return char;
-                }
-            });
-        }
-
-        function parseMarkdown(text) {
-            text = escapeHTML(text);
-            text = text.replace(/^######\s+(.*)$/gm, '<h6>$1</h6>');
-            text = text.replace(/^#####\s+(.*)$/gm, '<h5>$1</h5>');
-            text = text.replace(/^####\s+(.*)$/gm, '<h4>$1</h4>');
-            text = text.replace(/^###\s+(.*)$/gm, '<h3>$1</h3>');
-            text = text.replace(/^##\s+(.*)$/gm, '<h2>$1</h2>');
-            text = text.replace(/^#\s+(.*)$/gm, '<h1>$1</h1>');
-            text = text.replace(/---/g, '<div class="separator"></div>');
-            text = text.replace(/\*\*\*(.*?)\*\*\*/g, '<strong><em>$1</em></strong>');
-            text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-            text = text.replace(/_(.*?)_/g, '<em>$1</em>');
-            text = text.replace(/`([^`]+)`/g, '<code>$1</code>');
-            text = text.replace(/```([\s\S]+?)```/g, '<pre><code>$1</code></pre>');
-            text = text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
-            text = text.replace(/(?:^|\n)[*-]\s?(.*)/g, function (match, p1) {
-                return `<ul><li>${p1}</li></ul>`;
-            });
-            text = text.replace(/<\/ul>\s*<ul>/g, '');
-            text = text.replace(/(?:^|\n)(\d+)\.\s?(.*)/g, function (match, p1, p2) {
-                return `<ol><li>${p2}</li></ol>`;
-            });
-            text = text.replace(/<\/ol>\s*<ol>/g, '');
-            text = text.replace(/\n/g, '<br>');
-            text = text.replace(/\\\((.*?)\\\)/g, (match, expr) => {
-                try {
-                    const cleanedExpr = expr.replace(/[VN]/g, '').replace(/<br\s*\/?>/gi, '').trim();
-                    return katex.renderToString(cleanedExpr, { throwOnError: false, displayMode: false, output: 'html' });
-                } catch (error) {
-                    return `<span class="math-error">${escapeHTML(expr)}</span>`;
-                }
-            });
-            text = text.replace(/\\\[(.+?)\\\]/g, (match, expr) => {
-                try {
-                    const cleanedExpr = expr.replace(/[VN]/g, '').replace(/<br\s*\/?>/gi, '').trim();
-                    return `<div class="katex-display">${katex.renderToString(cleanedExpr, { throwOnError: false, displayMode: true, output: 'html' })}</div>`;
-                } catch (error) {
-                    return `<div class="math-error">${escapeHTML(expr)}</div>`;
-                }
-            });
-            text = text.replace(/\\\(|\\\)|\\\[|\\\]/g, '');
-            return text;
-        }
-
-        // Load messages from localStorage on page load
-        function loadMessages() {
-            // Load theme
-            const savedTheme = localStorage.getItem('theme');
-            if (savedTheme) {
-                document.documentElement.setAttribute('data-theme', savedTheme);
-            } else {
-                document.documentElement.setAttribute('data-theme', 'dark'); // Default to dark if no theme saved
-            }
-
-            // Load messages
-            const savedMessages = localStorage.getItem('chatMessages');
-            if (savedMessages) {
-                const chatData = JSON.parse(savedMessages);
-                chatData.forEach(item => {
-                    if (item.type === 'text') {
-                        displayMessage(item.content, item.sender);
-                    } else if (item.type === 'image') {
-                        const image = document.createElement('img');
-                        image.src = item.url;
-                        image.alt = item.alt;
-                        image.className = "generated-image";
-                        image.onclick = function () { openModal(item.url); };
-                        messages.appendChild(image);
-                        messages.scrollTop = messages.scrollHeight;
-                    }
-                });
-            } else {
-                messages.innerHTML = `
-                    <div class="help" id="helpText"></div>
-                    <div class="main-container" id="mainContainer">
-                        <button class="button" onclick="buttonAction('Create image')"><i class="fas fa-image"></i> Create image</button>
-                        <button class="button" onclick="buttonAction('Help me write')"><i class="fas fa-pen"></i> Help me write</button>
-                        <button class="button" onclick="buttonAction('Code')"><i class="fas fa-code"></i> Code</button>
-                        <button class="button" onclick="buttonAction('Meaning')"><i class="fa-solid fa-language"></i> Meaning</button>
-                        <button class="button" onclick="buttonAction('Spell Check')"><i class="fa-solid fa-spell-check"></i> Spell Check</button>
-                        <button class="button" onclick="buttonAction('Get advice')"><i class="fas fa-graduation-cap"></i> Get advice</button>
-                        <button class="button" onclick="buttonAction('Summarize text')"><i class="fas fa-file-alt"></i> Summarize text</button>
-                        <button class="button" onclick="buttonAction('Do Math')"><i class="fas fa-calculator"></i> Do Math</button>
-                        <button class="button" onclick="buttonAction('Switch Theme')"><i class="fa-solid fa-circle-half-stroke"></i>Switch Theme</button>
-                    </div>
-                `;
-                index = 0;
-                typeWriter();
-            }
-        }
-
-        // Save to localStorage (for messages and images)
-        function saveToLocalStorage(type, content, sender = null, url = null, alt = null) {
-            const savedMessages = localStorage.getItem('chatMessages');
-            const chatData = savedMessages ? JSON.parse(savedMessages) : [];
-            if (type === 'text') {
-                chatData.push({ type: 'text', content, sender });
-            } else if (type === 'image') {
-                chatData.push({ type: 'image', url, alt });
-            }
-            localStorage.setItem('chatMessages', JSON.stringify(chatData));
-        }
-
-        function handleUserMessage() {
-            const userMessage = inputField.value.trim();
-            if (userMessage === "") return;
-
-            displayMessage(userMessage, 'user');
-            saveToLocalStorage('text', userMessage, 'user'); // Save user message
-            inputField.value = '';
-            document.getElementById('helpText').style.display = "none";
-            document.getElementById('mainContainer').style.display = "none";
-
-            const lowerMessage = userMessage.toLowerCase();
-            if (lowerMessage === "switch theme to dark") {
-                document.documentElement.setAttribute('data-theme', 'dark');
-                localStorage.setItem('theme', 'dark'); // Save theme
-                displayMessage("Switched to dark theme!", 'assistant');
-                saveToLocalStorage('text', "Switched to dark theme!", 'assistant');
-            } else if (lowerMessage === "switch theme to light") {
-                document.documentElement.setAttribute('data-theme', 'light');
-                localStorage.setItem('theme', 'light'); // Save theme
-                displayMessage("Switched to light theme!", 'assistant');
-                saveToLocalStorage('text', "Switched to light theme!", 'assistant');
-            } else {
-                fetchAssistantResponse(userMessage);
-            }
-        }
-
-        function displayMessage(text, sender) {
-            const messageDiv = document.createElement('div');
-            messageDiv.className = sender === 'user' ? 'user-message' : 'assistant-message';
-            messageDiv.innerHTML = parseMarkdown(text);
-            messages.appendChild(messageDiv);
-            messages.scrollTop = messages.scrollHeight;
-        }
-
-        async function fetchAssistantResponse(userMessage) {
-            const typingDiv = document.createElement('div');
-            typingDiv.className = 'assistant-message';
-            typingDiv.innerHTML = '<span class="typing">Assistant is typing</span>';
-            messages.appendChild(typingDiv);
-            messages.scrollTop = messages.scrollHeight;
-
-            if (userMessage.startsWith("/imagine")) {
-                const prompt = userMessage.replace("/imagine", "").trim();
-                if (prompt) {
-                    try {
-                        typingDiv.innerHTML = '<span class="typing">Please wait while generating your image</span>';
-                        const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}/?nologo=1&width=1920&height=1920`;
-                        const image = document.createElement('img');
-                        image.src = imageUrl;
-                        image.alt = prompt;
-                        image.className = "generated-image";
-                        image.onclick = function () { openModal(imageUrl); };
-                        image.onload = function () {
-                            typingDiv.innerHTML = '';
-                            messages.appendChild(image);
-                            saveToLocalStorage('image', null, null, imageUrl, prompt); // Save image
-                            messages.scrollTop = messages.scrollHeight;
-                        };
-                        messages.appendChild(image);
-                        messages.scrollTop = messages.scrollHeight;
-                    } catch (error) {
-                        typingDiv.innerHTML = "<span class='typing'>Error: Couldn't connect to the image server.</span>";
-                        saveToLocalStorage('text', "Error: Couldn't connect to the image server.", 'assistant');
-                    }
-                } else {
-                    typingDiv.innerHTML = "<span class='typing'>Please provide a prompt after /imagine.</span>";
-                    saveToLocalStorage('text', "Please provide a prompt after /imagine.", 'assistant');
-                }
-            } else {
-                const apiUrl = 'https://text.pollinations.ai/openai';
-                const requestBody = {
-                    model: 'openai-gpt-3',
-                    messages: [{ role: 'user', content: userMessage }]
-                };
-                try {
-                    const response = await fetch(apiUrl, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(requestBody)
-                    });
-                    if (response.ok) {
-                        const data = await response.json();
-                        const assistantMessage = data.choices[0].message.content;
-                        const formattedMessage = parseMarkdown(assistantMessage);
-                        typingDiv.innerHTML = '';
-                        const messageDiv = document.createElement('div');
-                        messageDiv.className = 'assistant-message';
-                        messageDiv.innerHTML = formattedMessage;
-                        messages.appendChild(messageDiv);
-                        saveToLocalStorage('text', assistantMessage, 'assistant'); // Save assistant response
-                        messages.scrollTop = messages.scrollHeight;
-                    } else {
-                        typingDiv.innerHTML = "<span class='typing'>Sorry, I couldn't process your request.</span>";
-                        saveToLocalStorage('text', "Sorry, I couldn't process your request.", 'assistant');
-                    }
-                } catch (error) {
-                    typingDiv.innerHTML = "<span class='typing'>Error: Couldn't connect to the server.</span>";
-                    saveToLocalStorage('text', "Error: Couldn't connect to the server.", 'assistant');
-                }
-            }
-        }
-
-        const text = "What can I help with?";
-        const speed = 50;
-        let index = 0;
-
-        function typeWriter() {
-            if (index < text.length) {
-                document.getElementById("helpText").innerHTML += text.charAt(index);
-                index++;
-                setTimeout(typeWriter, speed);
-            }
-        }
-
-        // Updated showInfo with modal
-        function showInfo() {
-            document.getElementById("infoModal").style.display = "flex";
-        }
-
-        function closeInfoModal() {
-            document.getElementById("infoModal").style.display = "none";
-        }
-
-
-        // Updated confirmDeletion with modal
-        function confirmDeletion() {
-            document.getElementById("deleteModal").style.display = "flex";
-        }
-
-        function closeDeleteModal() {
-            document.getElementById("deleteModal").style.display = "none";
-            // Show cancellation message in a temporary div (mimicking Swal)
-            const tempMessage = document.createElement('div');
-            tempMessage.className = 'assistant-message';
-            tempMessage.innerHTML = parseMarkdown("Cancelled: Your messages are safe.");
-            messages.appendChild(tempMessage);
-            messages.scrollTop = messages.scrollHeight;
-            setTimeout(() => tempMessage.remove(), 2000); // Remove after 2 seconds
-        }
-
-        function deleteMessages() {
-            messages.innerHTML = '';
-            localStorage.removeItem('chatMessages');
-            localStorage.removeItem('theme');
-            document.documentElement.setAttribute('data-theme', 'dark');
-            messages.innerHTML = `
-                <div class="help" id="helpText"></div>
-                <div class="main-container" id="mainContainer">
-                    <button class="button" onclick="buttonAction('Create image')"><i class="fas fa-image"></i> Create image</button>
-                    <button class="button" onclick="buttonAction('Help me write')"><i class="fas fa-pen"></i> Help me write</button>
-                    <button class="button" onclick="buttonAction('Code')"><i class="fas fa-code"></i> Code</button>
-                    <button class="button" onclick="buttonAction('Meaning')"><i class="fa-solid fa-language"></i> Meaning</button>
-                    <button class="button" onclick="buttonAction('Spell Check')"><i class="fa-solid fa-spell-check"></i> Spell Check</button>
-                    <button class="button" onclick="buttonAction('Get advice')"><i class="fas fa-graduation-cap"></i> Get advice</button>
-                    <button class="button" onclick="buttonAction('Summarize text')"><i class="fas fa-file-alt"></i> Summarize text</button>
-                    <button class="button" onclick="buttonAction('Do Math')"><i class="fas fa-calculator"></i> Do Math</button>
-                    <button class="button" onclick="buttonAction('Switch Theme')"><i class="fa-solid fa-circle-half-stroke"></i>Switch Theme</button>
-                </div>
-            `;
-            index = 0;
-            typeWriter();
-            document.getElementById("deleteModal").style.display = "none";
-        }
-        function fadeInMainContainer() {
-            const mainContainer = document.getElementById('mainContainer');
-            mainContainer.style.display = 'flex';
-            mainContainer.style.animationName = 'fadeIn';
-        }
-
-        // Load messages on page load
-        window.onload = function () {
-            loadMessages();
-        };
+       
     </script>
 </body>
 
