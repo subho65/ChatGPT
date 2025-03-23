@@ -365,7 +365,7 @@
         }
 
         [data-theme="light"] .close-btn,
-         .download-btn {
+        .download-btn {
             color: #0066cc;
         }
 
@@ -639,33 +639,47 @@
         }
 
 
+      .history-item {
+    padding: 0.8rem;
+    margin: 0.5rem 0;
+    background: var(--assistant-bubble);
+    border-radius: var(--radius);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
 
+.history-title {
+    flex-grow: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
 
+.edit-title-btn {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 1rem;
+    cursor: pointer;
+    padding: 0 0.5rem;
+    transition: color 0.3s ease;
+}
 
-        .history-item {
-            padding: 0.8rem;
-            margin: 0.5rem 0;
-            background: var(--assistant-bubble);
-            border-radius: var(--radius);
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+.edit-title-btn:hover {
+    color: var(--accent);
+}
 
-        .history-item:hover {
-            background: var(--accent);
-            color: #fff;
-        }
-
-        .history-item .delete-chat {
-            color: var(--error-color);
-            cursor: pointer;
-        }
-
-        .history-item .delete-chat:hover {
-            transform: scale(1.1);
-        }
+.edit-title-input {
+    flex-grow: 1;
+    padding: 0.5rem;
+    border: 1px solid var(--input-border);
+    border-radius: var(--radius);
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    font-size: 1rem;
+}
 
 
 
@@ -759,6 +773,22 @@
             height: calc(100% - 120px);
             padding: 1rem;
 
+        }
+
+        .copy-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1rem;
+            cursor: pointer;
+            top: 0.5rem;
+            right: 0.5rem;
+            padding: 0;
+            transition: color 0.3s ease;
+        }
+
+        .copy-btn:hover {
+            color: var(--accent);
         }
     </style>
 </head>
@@ -1131,7 +1161,6 @@
                     fetchAssistantResponse(userMessage);
                 }
             }
-
             function displayMessage(text, sender) {
                 if (!messages) return;
                 const messageDiv = document.createElement('div');
@@ -1139,7 +1168,62 @@
                 messageDiv.innerHTML = parseMarkdown(text);
                 messages.appendChild(messageDiv);
                 messages.scrollTop = messages.scrollHeight;
+
+                // Add Copy button for assistant messages only
+                if (sender === 'assistant') {
+                    const copyButton = document.createElement('button');
+                    copyButton.className = 'copy-btn';
+                    copyButton.innerHTML = '<i class="fas fa-copy"></i>'; // Assuming Font Awesome
+                    copyButton.title = 'Copy message';
+
+                    copyButton.addEventListener('click', () => {
+                        if (navigator.clipboard && navigator.clipboard.writeText) {
+                            navigator.clipboard.writeText(text)
+                                .then(() => showSuccessIndicator(copyButton)) // Show check icon
+                                .catch(err => {
+                                    console.error('Failed to copy:', err);
+                                    fallbackCopyText(text, copyButton); // Fallback on failure
+                                });
+                        } else {
+                            fallbackCopyText(text, copyButton); // Fallback for unsupported browsers
+                        }
+                    });
+
+                    messageDiv.appendChild(copyButton);
+                }
             }
+
+            // ✅ Function to show success indicator
+            function showSuccessIndicator(button) {
+                button.innerHTML = '<i class="fas fa-check"></i>'; // Success indicator
+                setTimeout(() => {
+                    button.innerHTML = '<i class="fas fa-copy"></i>'; // Reset after 2s
+                }, 2000);
+            }
+
+            // ✅ Fallback function for unsupported browsers (Mobile Safari, older Android)
+            function fallbackCopyText(text, button) {
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                textArea.style.position = 'absolute';
+                textArea.style.left = '-9999px';
+                document.body.appendChild(textArea);
+                textArea.select();
+
+                try {
+                    const success = document.execCommand('copy'); // Legacy method
+                    if (success) {
+                        showSuccessIndicator(button); // Show check icon
+                    } else {
+                        alert('Failed to copy');
+                    }
+                } catch (err) {
+                    console.error('Fallback: Could not copy text', err);
+                }
+
+                document.body.removeChild(textArea);
+            }
+
 
             async function fetchAssistantResponse(userMessage) {
                 if (!messages) return;
@@ -1297,7 +1381,7 @@
                 }
             }
 
-            function updateHistoryList() {
+           function updateHistoryList() {
                 const historyList = document.getElementById('historyList');
                 if (historyList) {
                     historyList.innerHTML = '';
@@ -1317,15 +1401,51 @@
                             titleSpan.textContent = chat.title;
                             titleSpan.className = 'history-title';
 
+                            // Edit button
+                            const editSpan = document.createElement('span');
+                            editSpan.className = 'edit-title-btn';
+                            editSpan.innerHTML = '<i class="fas fa-edit"></i>';
+                            editSpan.title = 'Edit title';
+
+                            editSpan.addEventListener('click', (event) => {
+                                event.stopPropagation();
+                                const input = document.createElement('input');
+                                input.type = 'text';
+                                input.value = chat.title;
+                                input.className = 'edit-title-input';
+
+                                div.replaceChild(input, titleSpan);
+                                input.focus();
+
+                                const saveTitle = () => {
+                                    const newTitle = input.value.trim();
+                                    if (newTitle && newTitle !== chat.title) {
+                                        chats[chatId].title = newTitle;
+                                        localStorage.setItem('chats', JSON.stringify(chats));
+                                        titleSpan.textContent = newTitle;
+                                    }
+                                    div.replaceChild(titleSpan, input);
+                                };
+
+                                input.addEventListener('keydown', (e) => {
+                                    if (e.key === 'Enter') saveTitle();
+                                    if (e.key === 'Escape') div.replaceChild(titleSpan, input);
+                                });
+                                input.addEventListener('blur', saveTitle);
+                            });
+
+                            // Delete button
                             const deleteSpan = document.createElement('span');
                             deleteSpan.className = 'delete-chat';
                             deleteSpan.innerHTML = '<i class="fas fa-trash"></i>';
 
                             div.appendChild(titleSpan);
+                            div.appendChild(editSpan); // Edit button before delete
                             div.appendChild(deleteSpan);
 
                             div.addEventListener('click', (event) => {
-                                if (event.target !== deleteSpan && !deleteSpan.contains(event.target)) {
+                                if (event.target !== deleteSpan && !deleteSpan.contains(event.target) &&
+                                    event.target !== editSpan && !editSpan.contains(event.target)) {
                                     loadChat(chatId);
                                 }
                             });
