@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="light">
 
 <head>
     <meta charset="UTF-8">
@@ -321,7 +321,7 @@
             padding: 1.5rem;
             border-radius: var(--radius);
             width: 90%;
-            max-width: 800px;
+            max-width: 500px;
             box-shadow: var(--shadow);
             position: relative;
         }
@@ -329,19 +329,19 @@
         .modal img {
             width: 100%;
             border-radius: 0.5rem;
-            max-height: 80vh;
+            max-height: auto;
         }
 
         .close-btn,
         .download-btn {
             position: absolute;
             top: 1rem;
-            color: var(--text-primary);
             font-size: clamp(1.2rem, 3vw, 1.5rem);
             cursor: pointer;
             transition: color 0.3s ease, transform 0.2s ease;
             background: none;
             border: none;
+            gap: 1rem;
         }
 
         .close-btn:hover,
@@ -356,8 +356,19 @@
         }
 
         .download-btn {
-            right: 3rem;
+            right: 3.5rem;
         }
+
+        [data-theme="dark"] .close-btn,
+        .download-btn {
+            color: white;
+        }
+
+        [data-theme="light"] .close-btn,
+         .download-btn {
+            color: #0066cc;
+        }
+
 
         .main-container {
             display: flex;
@@ -627,28 +638,9 @@
             content: url("light.png");
         }
 
-        .menu-panel {
-            display: none;
-            position: fixed;
-            left: 0;
-            top: 0;
-            width: 300px;
-            height: 100%;
-            background: var(--bg-secondary);
-            box-shadow: var(--shadow);
-            z-index: 1000;
-            padding: 1rem;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-        }
 
-        .menu-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
+
+
 
         .history-item {
             padding: 0.8rem;
@@ -675,16 +667,7 @@
             transform: scale(1.1);
         }
 
-        .menu-footer {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            padding: 1rem;
-            border-top: 1px solid var(--separator);
-            background: var(--bg-secondary);
-            /* Ensures it blends with the panel */
-        }
+
 
         .info-menu-button {
             background: none;
@@ -702,13 +685,22 @@
             color: var(--accent);
         }
 
-        .search-btn {
+        .search-btn,
+        .closee-btn {
             background: none;
             border: none;
             color: var(--text-secondary);
-            font-size: 1rem;
+            font-size: 1.2rem;
             cursor: pointer;
-            padding: 0.3rem 2rem;
+            padding: 0;
+            /* Remove padding to rely on flex alignment */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            /* Fixed width for consistency */
+            height: 24px;
+            /* Fixed height for consistency */
             transition: color 0.3s ease;
         }
 
@@ -716,11 +708,58 @@
             color: var(--accent);
         }
 
-       .menu-header .menu-buttons {
-  
-    gap: 5rem; /* Adjust this value for desired spacing */
+        .menu-panel {
+            display: none;
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 300px;
+            height: 100%;
+            background: var(--bg-secondary);
+            box-shadow: var(--shadow);
+            z-index: 1000;
+            padding: 0;
+            /* Remove padding here, apply to children */
+            overflow-y: hidden;
+        }
 
-}
+        .menu-header {
+            position: fixed;
+            /* Fix at top */
+            top: 0;
+            left: 0;
+            width: 300px;
+            /* Match menu-panel width */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: var(--bg-secondary);
+            z-index: 1001;
+            /* Above scrolling content */
+            border-bottom: 1px solid var(--separator);
+            /* Optional, for visual separation */
+        }
+
+        .menu-footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 300px;
+            padding: 1rem;
+            border-top: 1px solid var(--separator);
+            background: var(--bg-secondary);
+            z-index: 1001;
+        }
+
+        .menu-panel .history-container {
+            margin-top: 60px;
+            margin-bottom: 60px;
+            overflow-y: auto;
+            height: calc(100% - 120px);
+            padding: 1rem;
+
+        }
     </style>
 </head>
 
@@ -757,18 +796,18 @@
     <div class="menu-panel" id="menuPanel">
         <div class="menu-header">
             <h3>Chat History</h3>
-            <div>
-                <div class="menu-buttons">
+            <div class="header-buttons">
                 <button class="search-btn" id="searchMenuBtn"><i class="fas fa-search"></i></button>
-                <button class="close-btn" id="closeMenuBtn"><i class="fas fa-times"></i></button>
-                </div>
+                <button class="closee-btn" id="closeMenuBtn"><i class="fas fa-times"></i></button>
             </div>
         </div>
-        <div id="searchInputContainer" style="display: none; padding: 0.5rem;">
-            <input type="text" id="searchChatInput" placeholder="Search chats..."
-                style="width: 100%; padding: 0.5rem; border-radius: 0.5rem; border: 1px solid var(--input-border);">
+        <div class="history-container">
+            <div id="searchInputContainer" style="display: none; padding: 0.5rem;">
+                <input type="text" id="searchChatInput" placeholder="Search chats..."
+                    style="width: 100%; padding: 0.5rem; border-radius: 0.5rem; border: 1px solid var(--input-border);">
+            </div>
+            <div id="historyList"></div>
         </div>
-        <div id="historyList"></div>
         <div class="menu-footer">
             <button class="info-menu-button" id="menuInfoButton"><i class="fas fa-info-circle"></i> Info</button>
         </div>
@@ -848,6 +887,14 @@
             let currentChatId = null;
             let chats = JSON.parse(localStorage.getItem('chats')) || {};
             let chatIdToDelete = null;
+
+            // Load last used chat ID if available
+            const lastChatId = localStorage.getItem('lastChatId');
+            if (lastChatId && chats[lastChatId]) {
+                currentChatId = lastChatId;
+                console.log('Restored last chat ID:', currentChatId);
+            }
+
             const menuPanel = document.getElementById('menuPanel');
             if (menuPanel) menuPanel.style.display = 'none';
             const deleteChatModal = document.getElementById('deleteChatModal');
