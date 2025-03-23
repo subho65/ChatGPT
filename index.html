@@ -639,47 +639,46 @@
         }
 
 
-      .history-item {
-    padding: 0.8rem;
-    margin: 0.5rem 0;
-    background: var(--assistant-bubble);
-    border-radius: var(--radius);
-    cursor: pointer;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
+        .history-item {
+            padding: 0.8rem;
+            margin: 0.5rem 0;
+            background: var(--assistant-bubble);
+            border-radius: var(--radius);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-.history-title {
-    flex-grow: 1;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
+        .history-title {
+            flex-grow: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
 
-.edit-title-btn {
-    background: none;
-    border: none;
-    color: var(--text-secondary);
-    font-size: 1rem;
-    cursor: pointer;
-    padding: 0 0.5rem;
-    transition: color 0.3s ease;
-}
+        .edit-title-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1rem;
+            cursor: pointer;
+            padding: 0 0.5rem;
+            transition: color 0.3s ease;
+        }
 
-.edit-title-btn:hover {
-    color: var(--accent);
-}
+        .edit-title-btn:hover {
+            color: var(--accent);
+        }
 
-.edit-title-input {
-    flex-grow: 1;
-    padding: 0.5rem;
-    border: 1px solid var(--input-border);
-    border-radius: var(--radius);
-    background: var(--bg-secondary);
-    color: var(--text-primary);
-    font-size: 1rem;
-}
+        .edit-title-input {
+            flex-grow: 1;
+            padding: 0;
+            border: none;
+            color: var(--text-primary);
+            font-size: 1rem;
+            background: none;
+        }
 
 
 
@@ -1381,7 +1380,7 @@
                 }
             }
 
-           function updateHistoryList() {
+            function updateHistoryList() {
                 const historyList = document.getElementById('historyList');
                 if (historyList) {
                     historyList.innerHTML = '';
